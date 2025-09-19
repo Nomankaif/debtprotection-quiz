@@ -473,7 +473,7 @@ export default function MultiStepForm() {
   setSubmitting(true);
   setSubmitError("");
   try {
-    const res = await fetch("http://localhost:1000/api/form/submit", {
+    const res = await fetch("http://www.debtprotection.org/api/form/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
