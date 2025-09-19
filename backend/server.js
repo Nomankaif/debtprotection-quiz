@@ -1,8 +1,27 @@
-import app from "./src/app.js";
+// server.js
+import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import bodyParser from "body-parser";
+import formRoutes from "./src/routes/formRoutes.js";
+import connectDB from "./src/config/db.js";
 
 dotenv.config();
 
+// Connect to DB
+connectDB();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// Routes
+app.get("/", (req, res) => res.send("Form API is running 🚀"));
+app.use("/api/form", formRoutes);
+
+// Start server
 const PORT = process.env.PORT || 2000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
