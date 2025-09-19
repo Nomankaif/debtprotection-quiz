@@ -1,4 +1,19 @@
 // server.js
+
+// Add these lines at the very top to catch silent errors
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 UNHANDLED REJECTION! Shutting down...');
+  console.error('Reason:', reason);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('💥 UNCAUGHT EXCEPTION! Shutting down...');
+  console.error(err);
+  process.exit(1);
+});
+
+// ... Your existing code starts below
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
