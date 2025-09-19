@@ -22,7 +22,7 @@ app.get("/", (req, res) => res.send("Form API is running 🚀"));
 app.use("/api/form", formRoutes);
 
 // Start server
-const PORT = process.env.PORT || 2000;
+const PORT = process.env.PORT || 1000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
