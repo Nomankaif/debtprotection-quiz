@@ -1,16 +1,16 @@
 // server.js
 
-// Add these lines at the very top to catch silent errors
+// MODIFY THE ERROR HANDLERS LIKE THIS
 process.on('unhandledRejection', (reason, promise) => {
   console.error('💥 UNHANDLED REJECTION! Shutting down...');
   console.error('Reason:', reason);
-  process.exit(1);
+  setTimeout(() => process.exit(1), 100); // Add a small delay
 });
 
 process.on('uncaughtException', (err) => {
   console.error('💥 UNCAUGHT EXCEPTION! Shutting down...');
   console.error(err);
-  process.exit(1);
+  setTimeout(() => process.exit(1), 100); // Add a small delay
 });
 
 // ... Your existing code starts below
