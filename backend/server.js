@@ -28,6 +28,12 @@ connectDB();
 
 const app = express();
 
+// ADD THIS MIDDLEWARE
+app.use((req, res, next) => {
+  console.log(`✅ Incoming Request: ${req.method} ${req.url}`);
+  next();
+});
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
