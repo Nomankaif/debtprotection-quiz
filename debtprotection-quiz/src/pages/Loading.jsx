@@ -1,9 +1,11 @@
+// debtprotection-quiz/src/pages/Loading.jsx
 import React, { useEffect } from "react";
 
 export default function Loading() {
   useEffect(() => {
     const t = setTimeout(() => {
-      window.location.href = "https://trk.trkclix.net/click?campaign_id=35&pub_id=57";
+      window.location.href =
+        "https://trk.trkclix.net/click?campaign_id=35&pub_id=57";
     }, 5000);
     return () => clearTimeout(t);
   }, []);

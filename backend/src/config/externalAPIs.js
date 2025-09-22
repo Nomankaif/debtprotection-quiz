@@ -1,3 +1,4 @@
+// backend/src/config/externalAPIs.js
 // ---- Debt Range Converter ----
 function mapDebtRange(amount) {
   if (amount >= 0 && amount <= 4999) return "$0 - $4,999";
@@ -33,7 +34,7 @@ export const externalApis = [
       };
     },
   },*/
-   {
+  {
     name: "BeeceptorMockAPI",
     url: "https://mp9ba419c2cf2f062247.free.beeceptor.com",
     headers: () => ({

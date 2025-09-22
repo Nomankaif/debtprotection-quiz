@@ -1,4 +1,4 @@
-// Header.jsx
+// debtprotection-quiz/src/components/Header.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";

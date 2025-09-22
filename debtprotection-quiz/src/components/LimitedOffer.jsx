@@ -1,4 +1,4 @@
-// LimitedOffer.jsx
+// debtprotection-quiz/src/components/LimitedOffer.jsx
 import React from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import useCountdown from "./countdown/useCountdown.js";
@@ -13,15 +13,30 @@ function FlipTile({ value, label }) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <div className="relative" style={{ perspective: "1000px" }} aria-hidden="true">
+    <div
+      className="relative"
+      style={{ perspective: "1000px" }}
+      aria-hidden="true"
+    >
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={display}
-          initial={prefersReducedMotion ? { opacity: 0 } : { rotateX: -180, opacity: 0 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { rotateX: 0, opacity: 1 }}
-          exit={prefersReducedMotion ? { opacity: 0 } : { rotateX: 180, opacity: 0 }}
+          initial={
+            prefersReducedMotion
+              ? { opacity: 0 }
+              : { rotateX: -180, opacity: 0 }
+          }
+          animate={
+            prefersReducedMotion ? { opacity: 1 } : { rotateX: 0, opacity: 1 }
+          }
+          exit={
+            prefersReducedMotion ? { opacity: 0 } : { rotateX: 180, opacity: 0 }
+          }
           transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
-          style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
+          style={{
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden",
+          }}
           className="
             relative overflow-hidden rounded-2xl border
             bg-white
@@ -62,7 +77,7 @@ function FlipTile({ value, label }) {
   );
 }
 
-const DEFAULT_MS = (1*24*60*60 + 11*60*60 + 24*60 + 11) * 1000; // 1d 11h 24m 11s
+const DEFAULT_MS = (1 * 24 * 60 * 60 + 11 * 60 * 60 + 24 * 60 + 11) * 1000; // 1d 11h 24m 11s
 
 /* LimitedOffer — centered; order: chip then timer; plain light background */
 export default function LimitedOffer() {
@@ -101,7 +116,8 @@ export default function LimitedOffer() {
             "
           >
             <div className="font-bold text-slate-900 mb-2 sm:mb-3 text-sm sm:text-base">
-              Limited Spots Available this Month. <br />Check if you qualify before time runs out:
+              Limited Spots Available this Month. <br />
+              Check if you qualify before time runs out:
             </div>
 
             {/* Single ARIA live region for SR users */}

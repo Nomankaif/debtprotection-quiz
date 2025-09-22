@@ -1,4 +1,4 @@
-// PartnerLogos.jsx
+// debtprotection-quiz/src/components/PartnerLogos.jsx
 import React from "react";
 
 function Logo({ file, alt, priority = false, width, height }) {
@@ -38,7 +38,6 @@ export default function PartnerLogos() {
   return (
     <section className="py-8 bg-white text-center">
       <div className="container-narrow max-w-6xl">
-
         {/* Mobile (< md): two rows. All priority to avoid late pop-in. */}
         <div className="md:hidden">
           <div className="flex justify-center gap-4 sm:gap-5">
