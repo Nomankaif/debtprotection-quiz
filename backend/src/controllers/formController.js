@@ -1,4 +1,5 @@
-import {FormSubmission} from "../models/FormSubmission.js";
+// backend/src/controllers/formController.js
+import { FormSubmission } from "../models/FormSubmission.js";
 import { pushToExternalApis } from "../services/externalService.js";
 
 export const submitForm = async (req, res) => {
@@ -26,10 +27,24 @@ export const submitForm = async (req, res) => {
     } = req.body;
 
     // Check required fields
-    if (!debtAmount || !email || !firstName || !lastName || !zipcode || option !== true) {
+    if (
+      !debtAmount ||
+      !email ||
+      !firstName ||
+      !lastName ||
+      !zipcode ||
+      option !== true
+    ) {
       return res.status(400).json({
         message: "Missing or invalid required fields",
-        required: ["debtAmount", "firstName", "lastName", "email", "zipcode", "option=true"],
+        required: [
+          "debtAmount",
+          "firstName",
+          "lastName",
+          "email",
+          "zipcode",
+          "option=true",
+        ],
         received: { debtAmount, firstName, lastName, email, zipcode, option },
       });
     }
@@ -43,7 +58,8 @@ export const submitForm = async (req, res) => {
     // Guarantee arrays not empty (to prevent validator errors)
     const safeAssets = assets.length > 0 ? assets : ["none"];
     const safeDebtTypes = debtTypes.length > 0 ? debtTypes : ["other"];
-    const safeStruggles = normalizedStruggles.length > 0 ? normalizedStruggles : ["high-interest"];
+    const safeStruggles =
+      normalizedStruggles.length > 0 ? normalizedStruggles : ["high-interest"];
 
     const payload = {
       debtAmount,

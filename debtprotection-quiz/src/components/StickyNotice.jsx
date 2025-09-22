@@ -1,4 +1,4 @@
-// src/components/StickyNotice.jsx
+// debtprotection-quiz/src/components/StickyNotice.jsx
 import React from "react";
 
 export default function StickyNotice() {
@@ -19,10 +19,15 @@ export default function StickyNotice() {
                   rounded-xl border border-slate-200 bg-white/95 backdrop-blur
                   px-4 py-3 sm:px-5 sm:py-3 text-[12px] sm:text-sm md:text-base text-slate-800
                   shadow-[0_8px_24px_rgba(0,0,0,0.24)]
-                  ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
+                  ${
+                    visible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-2 pointer-events-none"
+                  }
                   transition-all duration-300 z-[60]`}
     >
-      ⚠️ <strong>Updated September 17, 2025</strong>: Free debt evaluations filling fast. Check eligibility before spots close.
+      ⚠️ <strong>Updated September 17, 2025</strong>: Free debt evaluations
+      filling fast. Check eligibility before spots close.
     </div>
   );
 }

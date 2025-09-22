@@ -1,4 +1,4 @@
-// Testimonials.jsx
+// debtprotection-quiz/src/components/Testimonials.jsx
 import React from "react";
 import { motion, useAnimation } from "framer-motion";
 import { HiChevronLeft, HiChevronRight, HiStar } from "react-icons/hi";
@@ -6,12 +6,39 @@ import { AiFillStar } from "react-icons/ai";
 
 /* DATA */
 const DATA = [
-  { quote: "Debt Protection helped me reduce my debt by 45%! I can finally see light at the end of the tunnel.", name: "Michael J.", place: "New York, NY" },
-  { quote: "The process was so simple and the results were amazing. I'm debt-free in just 18 months!", name: "Sarah W.", place: "Los Angeles, CA" },
-  { quote: "Professional service from start to finish. They really care about helping people get out of debt.", name: "David C.", place: "Chicago, IL" },
-  { quote: "It increased my confidence. Because you were able to identify a problem, set a goal, make a plan and then achieve the goal.", name: "David N., Cat lover, tattoo aficionado" },
-  { quote: "I'll tell my story to anyone that wants; I have no shame whatsoever. National Debt Relief saved me so I can live my best life now!", name: "Angelic B., Singer with the St. Louis Symphony" },
-  { quote: "Our life started to get less complicated because the burden of debt is hard to carry.", name: "Jaime B., Private pilot, devoted husband" },
+  {
+    quote:
+      "Debt Protection helped me reduce my debt by 45%! I can finally see light at the end of the tunnel.",
+    name: "Michael J.",
+    place: "New York, NY",
+  },
+  {
+    quote:
+      "The process was so simple and the results were amazing. I'm debt-free in just 18 months!",
+    name: "Sarah W.",
+    place: "Los Angeles, CA",
+  },
+  {
+    quote:
+      "Professional service from start to finish. They really care about helping people get out of debt.",
+    name: "David C.",
+    place: "Chicago, IL",
+  },
+  {
+    quote:
+      "It increased my confidence. Because you were able to identify a problem, set a goal, make a plan and then achieve the goal.",
+    name: "David N., Cat lover, tattoo aficionado",
+  },
+  {
+    quote:
+      "I'll tell my story to anyone that wants; I have no shame whatsoever. National Debt Relief saved me so I can live my best life now!",
+    name: "Angelic B., Singer with the St. Louis Symphony",
+  },
+  {
+    quote:
+      "Our life started to get less complicated because the burden of debt is hard to carry.",
+    name: "Jaime B., Private pilot, devoted husband",
+  },
 ];
 
 /* Visible count by breakpoint: sm=1, md=3, lg=4 */
@@ -176,11 +203,11 @@ export default function Testimonials() {
     <section className="py-12 bg-white">
       <div className="container-narrow">
         <div className="text-center max-w-3xl mx-auto">
-  <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 bg-[hsla(320,75%,96%,0.9)] border-[hsl(320,70%,86%)] text-[hsl(18,88%,46%)] font-bold text-xs tracking-wide uppercase">
-    <HiStar className="text-[hsl(18,88%,56%)]" />
-    Success Stories
-  </div>
-</div>
+          <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 bg-[hsla(320,75%,96%,0.9)] border-[hsl(320,70%,86%)] text-[hsl(18,88%,46%)] font-bold text-xs tracking-wide uppercase">
+            <HiStar className="text-[hsl(18,88%,56%)]" />
+            Success Stories
+          </div>
+        </div>
 
         {/* Slider */}
         <div className="mt-8 relative">
@@ -194,8 +221,11 @@ export default function Testimonials() {
             className="mx-auto overflow-hidden rounded-2xl border border-slate-200"
             style={{ width: wrapperWidth }}
           >
-            <motion.ul className="flex gap-4 will-change-transform" animate={controls}>
-              {([...DATA, ...DATA, ...DATA]).map((t, i) => (
+            <motion.ul
+              className="flex gap-4 will-change-transform"
+              animate={controls}
+            >
+              {[...DATA, ...DATA, ...DATA].map((t, i) => (
                 <li key={`${t.name}-${i}`} className="shrink-0">
                   <Card {...t} />
                 </li>

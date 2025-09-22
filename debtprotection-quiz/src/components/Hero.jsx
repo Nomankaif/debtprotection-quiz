@@ -1,4 +1,4 @@
-// Hero.jsx
+// debtprotection-quiz/src/components/Hero.jsx
 import React from "react";
 import MultiStepForm from "./form/MultiStepForm.jsx";
 
@@ -12,8 +12,9 @@ export default function Hero() {
             Find Out if you Qualify for Debt Relief in under 60 seconds
           </h1>
 
-        <p className="mt-2 text-[clamp(0.9rem,3.2vw,0.2rem)] text-slate-700">
-            No upfront fees. 100% confidential. Checking eligibility will not affect your credit score.
+          <p className="mt-2 text-[clamp(0.9rem,3.2vw,0.2rem)] text-slate-700">
+            No upfront fees. 100% confidential. Checking eligibility will not
+            affect your credit score.
           </p>
         </div>
 

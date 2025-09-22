@@ -1,3 +1,4 @@
+// debtprotection-quiz/src/pages/Home.jsx
 import React from "react";
 import Hero from "../components/Hero.jsx";
 import Testimonials from "../components/Testimonials.jsx";
