@@ -35,7 +35,11 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://www.debtprotection.org',
+  optionsSuccessStatus: 200 
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Routes

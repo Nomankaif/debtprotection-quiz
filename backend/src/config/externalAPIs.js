@@ -16,10 +16,16 @@ function mapDebtRange(amount) {
 // ---- External API Config ----
 export const externalApis = [
   /*{
-    name: "DAPerformanceAPI",
-    url: "https://api.daperformancegroup.com/ndr/42424/",
+    // Change name to reflect the real API
+    name: "ProductionPartnerAPI",
+
+    // The URL is now loaded from an environment variable
+    url: process.env.PARTNER_API_URL,
     headers: () => ({
       "Content-Type": "application/json",
+      
+      // Also use environment variables for secrets like API keys
+      "Authorization": `Bearer ${process.env.PARTNER_API_KEY}`
     }),
     mapPayload: (submission) => {
       return {
