@@ -26,9 +26,9 @@ export default function Header() {
               transition={{ type: "spring", stiffness: 350, damping: 24 }}
             />
             {/* soft glow underline on hover (md+) */}
-            <span className="hidden md:block pointer-events-none absolute left-0 right-0 bottom-0 translate-y-2 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {/* <span className="hidden md:block pointer-events-none absolute left-0 right-0 bottom-0 translate-y-2 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <span className="block mx-auto w-3/5 h-full rounded-full blur-md bg-[linear-gradient(90deg,hsl(320,82%,82%),hsl(18,88%,78%),hsl(280,75%,78%))]" />
-            </span>
+            </span> */}
           </Link>
 
           {/* spacer to keep logo position consistent */}
