@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 
 export default function Loading() {
   useEffect(() => {
+     window.scrollTo(0, 0);
     const t = setTimeout(() => {
       window.location.href =
         "https://trk.trkclix.net/click?campaign_id=35&pub_id=57";

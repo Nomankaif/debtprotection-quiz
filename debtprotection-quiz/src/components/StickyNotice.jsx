@@ -26,7 +26,7 @@ export default function StickyNotice() {
                   }
                   transition-all duration-300 z-[60]`}
     >
-      ⚠️ <strong>Updated September 17, 2025</strong>: Free debt evaluations
+      ⚠️ <strong>Updated September 23, 2025</strong>: Free debt evaluations
       filling fast. Check eligibility before spots close.
     </div>
   );
