@@ -80,37 +80,31 @@ export default function Footer() {
 
             {/* nav */}
             <nav className="justify-self-center">
-              <ul className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm font-semibold">
+              <ul className="flex flex-wrap items-center justify-center gap-4 text-sm text-slate-600">
                 <li>
-                  <li>
-                    <ul className="flex flex-wrap items-center justify-center gap-4 text-sm text-slate-600">
-                      <li>
-                        <NavLink
-                          to="/privacyPolicy"
-                          className="hover:text-brand-700 hover:underline underline-offset-4"
-                          onClick={() =>
-                            window.scrollTo({ top: 0, behavior: "smooth" })
-                          }
-                        >
-                          Privacy Policy
-                        </NavLink>
-                      </li>
+                  <NavLink
+                    to="/privacyPolicy"
+                    className="hover:text-brand-700 hover:underline underline-offset-4"
+                    onClick={() =>
+                      window.scrollTo({ top: 0, behavior: "smooth" })
+                    }
+                  >
+                    Privacy Policy
+                  </NavLink>
+                </li>
 
-                      <li className="text-slate-300">•</li>
+                <li className="text-slate-300">•</li>
 
-                      <li>
-                        <NavLink
-                          to="/termsOfUse"
-                          className="hover:text-brand-700 hover:underline underline-offset-4"
-                          onClick={() =>
-                            window.scrollTo({ top: 0, behavior: "smooth" })
-                          }
-                        >
-                          Terms of Use
-                        </NavLink>
-                      </li>
-                    </ul>
-                  </li>
+                <li>
+                  <NavLink
+                    to="/termsOfUse"
+                    className="hover:text-brand-700 hover:underline underline-offset-4"
+                    onClick={() =>
+                      window.scrollTo({ top: 0, behavior: "smooth" })
+                    }
+                  >
+                    Terms of Use
+                  </NavLink>
                 </li>
               </ul>
             </nav>

@@ -147,6 +147,6 @@ const debtFormSubmissionSchema = new Schema(
 );
 
 export const FormSubmission = mongoose.model(
-  "formSubmit",
+  "formsubmits",
   debtFormSubmissionSchema
 );

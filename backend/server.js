@@ -1,17 +1,3 @@
-// backend/server.js
-
-// Error Handling
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("?? UNHANDLED REJECTION! Shutting down...");
-  console.error("Reason:", reason);
-  setTimeout(() => process.exit(1), 100); // Add a small delay
-});
-
-process.on("uncaughtException", (err) => {
-  console.error("?? UNCAUGHT EXCEPTION! Shutting down...");
-  console.error(err);
-  setTimeout(() => process.exit(1), 100); // Add a small delay
-});
 
 // Your imports
 import express from "express";

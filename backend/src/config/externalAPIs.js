@@ -65,4 +65,32 @@ export const externalApis = [
       };
     },
   },
+  {
+    name: "TestExternalAPI",
+    url: "https://httpbin.org/post", // Using httpbin for testing
+    headers: () => ({
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.EXTERNAL_API_KEY}`,
+      "X-API-Key": process.env.EXTERNAL_API_KEY,
+    }),
+    mapPayload: (submission) => {
+      return {
+        firstName: submission.firstName,
+        lastName: submission.lastName,
+        email: submission.email,
+        phone: submission.phone,
+        zipCode: submission.zipcode,
+        countryCode: submission.countryCode,
+        debtAmount: submission.debtAmount,
+        debtRange: mapDebtRange(Number(submission.debtAmount)),
+        assets: submission.assets,
+        employmentStatus: submission.employmentStatus,
+        struggles: submission.struggles,
+        debtTypes: submission.debtTypes,
+        option: submission.option,
+        apiKey: process.env.EXTERNAL_API_KEY,
+        timestamp: new Date().toISOString(),
+      };
+    },
+  },
 ];
