@@ -3,40 +3,7 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const sliderStyles = `
-  .slider::-webkit-slider-thumb {
-    appearance: none;
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    background: #3b82f6;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-    transition: all 0.2s ease;
-  }
-  
-  .slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
-  
-  .slider::-moz-range-thumb {
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    background: #3b82f6;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-    transition: all 0.2s ease;
-  }
-  
-  .slider::-moz-range-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
-
-
+const componentStyles = `
   .error-shake {
     animation: shake 0.5s ease-in-out;
   }
@@ -46,7 +13,6 @@ const sliderStyles = `
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
   }
-
 
   .success-pulse {
     animation: pulse 0.6s ease-in-out;
@@ -63,10 +29,23 @@ const steps = [
   {
     key: "debtAmount",
     title: "How much debt do you owe?",
-    type: "slider",
-    min: 1000,
-    max: 100000,
-    step: 1000,
+    type: "dropdown",
+    options: [
+      { label: "$0 - $4,999", value: "0-4999" },
+      { label: "$5,000 - $7,499", value: "5000-7499" },
+      { label: "$7,500 - $9,999", value: "7500-9999" },
+      { label: "$10,000 - $14,999", value: "10000-14999" },
+      { label: "$15,000 - $19,999", value: "15000-19999" },
+      { label: "$20,000 - $29,999", value: "20000-29999" },
+      { label: "$30,000 - $39,999", value: "30000-39999" },
+      { label: "$40,000 - $49,999", value: "40000-49999" },
+      { label: "$50,000 - $59,999", value: "50000-59999" },
+      { label: "$60,000 - $69,999", value: "60000-69999" },
+      { label: "$70,000 - $79,999", value: "70000-79999" },
+      { label: "$80,000 - $89,999", value: "80000-89999" },
+      { label: "$90,000 - $99,999", value: "90000-99999" },
+      { label: "$100,000+", value: "100000+" }
+    ],
     info: "🛡️ Helping People Like You Since 2007",
   },
   {
@@ -149,7 +128,6 @@ const steps = [
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/xanjbawz";
 
 const COUNTRY_CODES = [
-  { code: "+91", name: "India", flag: "🇮🇳", format: "XXXXX XXXXX", length: 10 },
   {
     code: "+1",
     name: "US/Canada",
@@ -157,6 +135,7 @@ const COUNTRY_CODES = [
     format: "(XXX) XXX-XXXX",
     length: 10,
   },
+  { code: "+91", name: "India", flag: "🇮🇳", format: "XXXXX XXXXX", length: 10 },
   { code: "+44", name: "UK", flag: "🇬🇧", format: "XXXX XXXXXX", length: 10 },
   {
     code: "+61",
@@ -221,6 +200,7 @@ export default function MultiStepForm() {
   const [errorShake, setErrorShake] = React.useState(false);
   const [successPulse, setSuccessPulse] = React.useState(false);
   const [completedSteps, setCompletedSteps] = React.useState(new Set());
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const loadTimeRef = React.useRef(Date.now());
   const navigate = useNavigate();
 
@@ -229,7 +209,7 @@ export default function MultiStepForm() {
 
   React.useEffect(() => {
     const styleSheet = document.createElement("style");
-    styleSheet.innerText = sliderStyles;
+    styleSheet.innerText = componentStyles;
     document.head.appendChild(styleSheet);
     return () => document.head.removeChild(styleSheet);
   }, []);
@@ -252,7 +232,7 @@ export default function MultiStepForm() {
           if (step < total - 1) {
             guardedNext();
           } else {
-            submit();
+            handleSubmit();
           }
           return;
         }
@@ -261,7 +241,7 @@ export default function MultiStepForm() {
         if (step < total - 1) {
           guardedNext();
         } else {
-          submit();
+          handleSubmit();
         }
       }
     };
@@ -292,6 +272,31 @@ export default function MultiStepForm() {
     }
   };
 
+  const handleDropdownSelect = (key, value) => {
+    bumpInteractions();
+    setData((d) => ({ ...d, [key]: value }));
+    setDropdownOpen(false);
+    setTouchedError(false);
+    setTimeout(() => guardedNext(), 100);
+  };
+
+  const dropdownRef = React.useRef(null);
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   function validate(s) {
     if (!s) return false;
 
@@ -303,8 +308,8 @@ export default function MultiStepForm() {
       return Boolean(data[s.key]?.length);
     }
 
-    if (s.type === "slider") {
-      return Boolean(data[s.key] && data[s.key] >= s.min);
+    if (s.type === "dropdown") {
+      return Boolean(data[s.key]);
     }
 
     if (s.type === "contact") {
@@ -343,7 +348,7 @@ export default function MultiStepForm() {
 
     if (current.type === "radio") return "Please choose an option to continue.";
     if (current.type === "checkbox") return "Pick at least one option.";
-    if (current.type === "slider")
+    if (current.type === "dropdown")
       return "Please select a debt amount to continue.";
 
     if (current.type === "contact") {
@@ -386,6 +391,7 @@ export default function MultiStepForm() {
 
     setCompletedSteps((prev) => new Set([...prev, step]));
     setTouchedError(false);
+    setDropdownOpen(false);
     setSuccessPulse(true);
     setTimeout(() => setSuccessPulse(false), 600);
 
@@ -396,12 +402,14 @@ export default function MultiStepForm() {
 
   function prev() {
     setTouchedError(false);
+    setDropdownOpen(false);
     setStep((s) => Math.max(s - 1, 0));
   }
 
   function jumpTo(targetIndex) {
     if (targetIndex < step) {
       setTouchedError(false);
+      setDropdownOpen(false);
       setStep(targetIndex);
       return;
     }
@@ -420,6 +428,7 @@ export default function MultiStepForm() {
 
       setCompletedSteps((prev) => new Set([...prev, step]));
       setTouchedError(false);
+      setDropdownOpen(false);
       setStep(targetIndex);
       return;
     }
@@ -661,49 +670,86 @@ export default function MultiStepForm() {
                 </motion.div>
               )}
 
-              {/* Slider */}
-              {current.type === "slider" && (
+              {/* Dropdown */}
+              {current.type === "dropdown" && (
                 <div className="space-y-6">
-                  <div className="text-center">
-                    <motion.div
-                      className="text-4xl font-bold text-blue-600 mb-2"
-                      key={data[current.key]}
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.2 }}
+                  <div className="relative w-full max-w-md mx-auto" ref={dropdownRef}>
+                    <motion.button
+                      type="button"
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                      className={`w-full px-4 py-4 text-left bg-white border-2 rounded-xl font-medium text-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
+                        dropdownOpen
+                          ? "border-blue-500 bg-blue-50"
+                          : touchedError && hasError
+                          ? "border-red-300 bg-red-50"
+                          : "border-slate-200 hover:border-blue-300"
+                      }`}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
-                      ${((data[current.key] || current.min) / 1000).toFixed(0)}K
-                    </motion.div>
-                    <p className="text-slate-600 text-sm">Debt Amount</p>
-                  </div>
-                  <div className="px-4">
-                    <input
-                      type="range"
-                      min={current.min}
-                      max={current.max}
-                      step={current.step}
-                      value={data[current.key] || current.min}
-                      onChange={(e) => {
-                        bumpInteractions();
-                        update(current.key, parseInt(e.target.value));
-                      }}
-                      className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer slider"
-                      style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
-                          (((data[current.key] || current.min) - current.min) /
-                            (current.max - current.min)) *
-                          100
-                        }%, #e2e8f0 ${
-                          (((data[current.key] || current.min) - current.min) /
-                            (current.max - current.min)) *
-                          100
-                        }%, #e2e8f0 100%)`,
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-2">
-                      <span>$1K</span>
-                      <span>$100K+</span>
-                    </div>
+                      <div className="flex items-center justify-between">
+                        <span className={`${data[current.key] ? "text-slate-800" : "text-slate-400"}`}>
+                          {data[current.key] 
+                            ? current.options.find(opt => opt.value === data[current.key])?.label 
+                            : "Select your debt amount"}
+                        </span>
+                        <motion.div
+                          animate={{ rotate: dropdownOpen ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-slate-400"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </motion.div>
+                      </div>
+                    </motion.button>
+
+                    <AnimatePresence>
+                      {dropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute z-10 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-80 overflow-auto"
+                        >
+                          <div className="py-2">
+                            {current.options.map((option, index) => (
+                              <motion.button
+                                key={option.value}
+                                type="button"
+                                onClick={() => handleDropdownSelect(current.key, option.value)}
+                                className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-150 ${
+                                  data[current.key] === option.value
+                                    ? "bg-blue-100 text-blue-800 font-medium"
+                                    : "text-slate-700 hover:text-blue-700"
+                                }`}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.03 }}
+                                whileHover={{ backgroundColor: "#eff6ff" }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span>{option.label}</span>
+                                  {data[current.key] === option.value && (
+                                    <motion.div
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      className="text-blue-600"
+                                    >
+                                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                    </motion.div>
+                                  )}
+                                </div>
+                              </motion.button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               )}
@@ -724,7 +770,8 @@ export default function MultiStepForm() {
                         key={op.value}
                         onClick={() => {
                           onRadioChange(current.key, op.value);
-                          guardedNext();
+                          // Auto-advance only after state is updated
+                          setTimeout(() => guardedNext(), 100);
                         }}
                         className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 h-full ${
                           checked

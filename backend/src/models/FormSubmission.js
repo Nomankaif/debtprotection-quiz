@@ -5,12 +5,26 @@ const { Schema } = mongoose;
 
 const debtFormSubmissionSchema = new Schema(
   {
-    // Step 1: Debt Amount (Slider)
+    // Step 1: Debt Amount (Dropdown)
     debtAmount: {
-      type: Number,
+      type: String,
       required: [true, "Debt amount is required."],
-      min: [1000, "Debt amount must be at least $1,000."],
-      max: [100000, "Debt amount cannot exceed $100,000."],
+      enum: [
+        "0-4999",
+        "5000-7499", 
+        "7500-9999",
+        "10000-14999",
+        "15000-19999",
+        "20000-29999",
+        "30000-39999",
+        "40000-49999",
+        "50000-59999",
+        "60000-69999",
+        "70000-79999",
+        "80000-89999",
+        "90000-99999",
+        "100000+"
+      ],
     },
 
     // Step 2: Assets (Checkbox)

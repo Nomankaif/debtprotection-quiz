@@ -15,17 +15,18 @@ function mapDebtRange(amount) {
 
 // ---- External API Config ----
 export const externalApis = [
-  /*{
+  {
     // Change name to reflect the real API
     name: "ProductionPartnerAPI",
 
     // The URL is now loaded from an environment variable
-    url: process.env.PARTNER_API_URL,
+    url: "https://httpbin.org/post",
     headers: () => ({
       "Content-Type": "application/json",
       
       // Also use environment variables for secrets like API keys
-      "Authorization": `Bearer ${process.env.PARTNER_API_KEY}`
+      "Authorization": `Bearer ${process.env.EXTERNAL_API_KEY}`,
+      "X-API-Key": process.env.EXTERNAL_API_KEY,
     }),
     mapPayload: (submission) => {
       return {
@@ -35,11 +36,9 @@ export const externalApis = [
         phone: submission.phone,
         zip: submission.zipCode,
         debt: mapDebtRange(Number(submission.debtAmount)),
-        subid: submission.subid || "",
-        subid2: submission.subid2 || "",
       };
     },
-  },*/
+  },
   {
     name: "BeeceptorMockAPI",
     url: "https://mp9ba419c2cf2f062247.free.beeceptor.com",
@@ -62,34 +61,6 @@ export const externalApis = [
         debtTypes: submission.debtTypes,
         option: submission.option,
         submissionMetadata: submission.submissionMetadata,
-      };
-    },
-  },
-  {
-    name: "TestExternalAPI",
-    url: "https://httpbin.org/post", // Using httpbin for testing
-    headers: () => ({
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.EXTERNAL_API_KEY}`,
-      "X-API-Key": process.env.EXTERNAL_API_KEY,
-    }),
-    mapPayload: (submission) => {
-      return {
-        firstName: submission.firstName,
-        lastName: submission.lastName,
-        email: submission.email,
-        phone: submission.phone,
-        zipCode: submission.zipcode,
-        countryCode: submission.countryCode,
-        debtAmount: submission.debtAmount,
-        debtRange: mapDebtRange(Number(submission.debtAmount)),
-        assets: submission.assets,
-        employmentStatus: submission.employmentStatus,
-        struggles: submission.struggles,
-        debtTypes: submission.debtTypes,
-        option: submission.option,
-        apiKey: process.env.EXTERNAL_API_KEY,
-        timestamp: new Date().toISOString(),
       };
     },
   },
