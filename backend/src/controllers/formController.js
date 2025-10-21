@@ -13,8 +13,6 @@ export const submitForm = async (req, res) => {
     const {
       debtAmount,
       assets = [],
-      employmentStatus = "",
-      struggles = [],
       debtTypes = [],
       zipcode,
       phone = "",
@@ -49,23 +47,13 @@ export const submitForm = async (req, res) => {
       });
     }
 
-    // Normalize struggles
-    const normalizedStruggles =
-      struggles.includes("all") && struggles.length === 1
-        ? ["high-interest", "min-payments", "multiple-cards", "medical-debt"]
-        : struggles;
-
     // Guarantee arrays not empty (to prevent validator errors)
     const safeAssets = assets.length > 0 ? assets : ["none"];
     const safeDebtTypes = debtTypes.length > 0 ? debtTypes : ["other"];
-    const safeStruggles =
-      normalizedStruggles.length > 0 ? normalizedStruggles : ["high-interest"];
 
     const payload = {
       debtAmount,
       assets: safeAssets,
-      employmentStatus,
-      struggles: safeStruggles,
       debtTypes: safeDebtTypes,
       zipcode,
       phone,

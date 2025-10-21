@@ -41,40 +41,6 @@ const debtFormSubmissionSchema = new Schema(
       ],
     },
 
-    // Step 3: Employment Status (Radio)
-    employmentStatus: {
-      type: String,
-      required: [true, "Employment status is required."],
-      enum: [
-        "full-time",
-        "part-time",
-        "self-employed",
-        "unemployed",
-        "retired",
-        "student",
-      ],
-    },
-
-    // Step 4: Struggles (Checkbox)
-    struggles: {
-      type: [
-        {
-          type: String,
-          enum: [
-            "high-interest",
-            "min-payments",
-            "multiple-cards",
-            "medical-debt",
-            "all",
-          ],
-        },
-      ],
-      validate: [
-        (val) => val.length > 0,
-        "At least one struggle must be selected.",
-      ],
-    },
-
     // Step 5: Debt Types (Checkbox)
     debtTypes: {
       type: [
