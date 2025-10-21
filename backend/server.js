@@ -31,7 +31,8 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => res.send("Form API is running ??"));
-app.use("quiz/api/form", formRoutes);
+app.use("/quiz/api/form", formRoutes);
+
 
 // Catch-all 404 Handler for debugging
 app.use((req, res, next) => {
