@@ -287,73 +287,73 @@ const ResultsPage = ({ answers, onStartOver }) => {
   }
 
   const allProviders = [
-    // { name: "Debt Relief 1", logo: "/quiz/images/debtrelief1.svg", rating: 4.6, category: "debt-relief", features: ["Reduce monthly payments", "Consolidate unsecured debts", "Free consultation with experts"], link: "https://debtrelief1.com/" },
-    // { name: "Debt MD", logo: "/quiz/images/debtmd.svg", rating: 4.5, category: "debt-relief", features: ["Personalized debt analyzer", "Connect with verified debt specialists", "Get a custom debt relief plan"], link: "https://www.debtmd.com/debt-analyzer?utm_source=%7Bpublisher_id%7D&utm_medium=neodr&utm_id=neodr&utm_term=%7Bclick_id%7D" },
+    { name: "Debt Relief - CPL - USA", logo: "/quiz/images/debtrelief1.svg", rating: 4.6, category: "debt-relief", features: ["Reduce monthly payments", "Consolidate unsecured debts", "Free consultation with experts"], link: "https://trk.trkclix.net/click?campaign_id=16&pub_id=57" },
+    { name: "DebtMD- US", logo: "/quiz/images/debtmd.svg", rating: 4.5, category: "debt-relief", features: ["Personalized debt analyzer", "Connect with verified debt specialists", "Get a custom debt relief plan"], link: "https://trk.trkclix.net/click?campaign_id=17&pub_id=57" },
     { name: "Insurify", logo: "/quiz/images/insurify.svg", rating: 4.5, category: "auto-insurance", 
       description: "Compare 100+ providers for your best rate.",
       features: ["Save up to $1,025 annually on premiums", "Transparent pricing with no hidden fees", "Quick online quotes from 100+ providers"], 
       oneLiner: "Compare in 60s", 
-      link: "https://insurify.com/save/quote-offers-s0/?" },
+      link: "https://trk.trkclix.net/click?campaign_id=27&pub_id=57" },
     { name: "First American Home Warranty", logo: "/quiz/images/firstAmericanHomeWarranty.png", rating: 4.5, category: "home-warranty",  
       description: "Protect your home from unexpected breakdowns.",
       features: ["$100 discount with PROTECT promo code", "Covers major systems & home appliances", "Instant online quotes in minutes"], 
       oneLiner: "Quote in 60s", 
-      link: "https://go.fahw.com/msv2045/?" },
+      link: "https://trk.trkclix.net/click?campaign_id=23&pub_id=57" },
     { name: "Endurance Warranty", logo: "/quiz/images/endurance.svg", rating: 4.8, category: "auto-insurance", "description": "Protect your vehicle from costly repairs.",
   features: ["Engine & transmission repair coverage", "24/7 roadside assistance nationwide", "30-day money-back satisfaction guarantee"], 
   oneLiner: "Check in 60s", 
-  link: "https://www.endurancewarranty.com/lp/diag3/?" },
+  link: "https://trk.trkclix.net/click?campaign_id=22&pub_id=57" },
     { name: "Jacuzzi", logo: "/quiz/images/jacuzzi.svg", rating: 4.8, category: "home-improvement", "description": "Transform your bathroom with premium remodeling.",
-  features: ["Professional tub-to-shower conversion", "No interest financing for 1 full year", "Same-day installation by certified experts"], link: "https://go.jacuzzi.com/?" },
+  features: ["Professional tub-to-shower conversion", "No interest financing for 1 full year", "Same-day installation by certified experts"], link: "https://trk.trkclix.net/click?campaign_id=28&pub_id=57" },
     { name: "Otto Insurance", logo: "/quiz/images/otto.webp", rating: 4.8, category: "auto-insurance", "description": "Save on auto, home, and pet insurance.",
   features: ["Instant free quotes from top insurers", "Save $500+ annually on coverage", "No hidden fees or surprise charges"], 
   oneLiner: "Quote in 60s", 
-  link: "https://f.ottoinsurance.com/auto/insurance?affid=4000&s1=organic&user_id=33d3cc1e-cdcb-4939-9527-1bec2d265e97" },
+  link: "https://trk.trkclix.net/click?campaign_id=36&pub_id=57" },
     { name: "The Accident Office", logo: "/quiz/images/theAccidentOfiice.svg", rating: 4.8, category: "legal", "description": "Get free legal evaluation for your injury case.",
-  features: ["No upfront fees - pay only if you win", "All injury types and accident cases covered", "Maximize compensation with expert attorneys"], link: "https://theaccidentoffice.com/" },
+  features: ["No upfront fees - pay only if you win", "All injury types and accident cases covered", "Maximize compensation with expert attorneys"], link: "https://trk.trkclix.net/click?campaign_id=33&pub_id=57" },
     { name: "Mutual of Omaha", logo: "/quiz/images/mutualOfOmaha.webp", rating: 4.8, category: "finance", "description": "Get free reverse mortgage guide from #1 lender.",
-  features: ["America's #1 HUD-endorsed lender", "Free comprehensive reverse mortgage guide", "Expert support throughout the process"], link: "https://mutualofomahareverse.com/partner/?" },
+  features: ["America's #1 HUD-endorsed lender", "Free comprehensive reverse mortgage guide", "Expert support throughout the process"], link: "https://trk.trkclix.net/click?campaign_id=32&pub_id=57" },
     { name: "Metal Roofing Innovations", logo: "/quiz/images/metalRoofingInnovations.png", rating: 4.8, category: "home-improvement", "description": "Upgrade with durable, energy-efficient metal roofing.",
-  features: ["Same-day professional installation", "Weather & fire resistant materials", "$0 down payment options available"], link: "https://start.getmetalroofinginnovations.com/zero-down-tmg/?utm_medium=4-160001&utm_content=34-5776984" },
+  features: ["Same-day professional installation", "Weather & fire resistant materials", "$0 down payment options available"], link: "https://trk.trkclix.net/click?campaign_id=31&pub_id=57" },
     { name: "ZippyLoan", logo: "/quiz/images/zippyLoan.png", rating: 4.8, category: "loan", "description": "Access personal loans up to $15,000 quickly.",
   features: ["Next-day funding up to $15,000", "All credit types welcome", "Secure online application process"], 
   oneLiner: "Check in 60s", 
-  link: "https://zippyloan.com/?" },
+  link: "https://trk.trkclix.net/click?campaign_id=50&pub_id=57" },
     { name: "Vivint", logo: "/quiz/images/vivint.png", rating: 4.8, category: "home-improvement", "description": "Protect your home with smart security systems.",
-  features: ["Smart threat detection technology", "Remote monitoring from anywhere", "Save up to 10% on utility bills"], link: "https://vivintoffers.com/lp77/?pid=42619_%7bpublisher_id%7d&r=488883354" },
+  features: ["Smart threat detection technology", "Remote monitoring from anywhere", "Save up to 10% on utility bills"], link: "https://trk.trkclix.net/click?campaign_id=48&pub_id=57" },
     { name: "Unclaimed Stimulus", logo: "/quiz/images/benefitsdepot.svg", rating: 4.8, category: "finance", "description": "Discover government grants for bills and education.",
-  features: ["Access FEMA & education grant programs", "Step-by-step application guidance", "Tax breaks and financial benefits included"], link: "https://benefitsdepot.net/article/6791?affiliate_id=245&ft=1&id=6791&sub1=%7Bclick_id%7D" },
+  features: ["Access FEMA & education grant programs", "Step-by-step application guidance", "Tax breaks and financial benefits included"], link: "https://trk.trkclix.net/click?campaign_id=47&pub_id=57" },
     { name: "Speedy Loan", logo: "/quiz/images/speedyNetLoan.png", rating: 4.8, category: "loan", "description": "Get emergency cash up to $5,000 fast.",
       features: ["Quick online application form", "Emergency cash up to $5,000", "All credit types accepted"], 
       oneLiner: "Cash in 60s", 
-      link: "https://speedynetloan.com/" },
+      link: "https://trk.trkclix.net/click?campaign_id=46&pub_id=57" },
     { name: "PersonalLoan2You", logo: "/quiz/images/personalLoan2You.png", rating: 4.8, category: "loan",  "description": "Get personal loans $100-$5,000 in 24 hours.",
       features: ["Secure online application form", "24-hour funding to your account", "SSL encryption for data protection"], 
       oneLiner: "Options in 60s", 
-      link: "https://www.personalloan2you.com/?" },
+      link: "https://trk.trkclix.net/click?campaign_id=58&pub_id=57" },
     { name: "PersonaLoan24", logo: "/quiz/images/personalLoan24.png", rating: 4.8, category: "loan", "description": "Get personal loans $100-$5,000 in 24 hours.",
   features: ["Same-day funding available", "Simple 3-step application process", "Secure encryption protects your data"], 
   oneLiner: "Pre-approval in 60s", 
-  link: "https://www.personaloan24.com/?" },
+  link: "https://trk.trkclix.net/click?campaign_id=57&pub_id=57" },
     { name: "GetCash4Me", logo: "/quiz/images/getCash4Me.png", rating: 4.8, category: "loan", "description": "Get loans $250-$10,000 in 15 minutes.",
   features: ["15-minute funding once approved", "All credit types and situations welcome", "No upfront fees or hidden charges"], 
   oneLiner: "Check in 60s", 
-  link: "https://www.getcash4me.com/?" },
+  link: "https://trk.trkclix.net/click?campaign_id=56&pub_id=57" },
     { name: "Wizzay", logo: "/quiz/images/wizzay.png", rating: 4.8, category: "loan","description": "Get loans $200-$5,000 next business day.",
   features: ["24-hour funding to your bank account", "All credit scores considered", "No submission fees or obligations"], 
   oneLiner: "Quiz in 60s", 
-  link: "https://www.wizzay.com/?" },
+  link: "https://trk.trkclix.net/click?campaign_id=55&pub_id=57" },
     { name: "Easy Capital Access", logo: "/quiz/images/EasyCapitaAccess_logo.png", rating: 4.8, category: "business-loan", "description": "Get fast financial access regardless of credit.",
-  features: ["Bad credit history welcome", "Free financial education resources", "Professional investment guidance included"], link: "https://easycapitalaccess.com/" },
+  features: ["Bad credit history welcome", "Free financial education resources", "Professional investment guidance included"], link: "https://trk.trkclix.net/click?campaign_id=54&pub_id=57" },
     { name: "Next Day Personal Loan", logo: "/quiz/images/nextDayPersonalLoan.svg", rating: 4.8, category: "loan", "description": "Get loans $100-$40,000 with flexible terms.",
-  features: ["Next-day funding up to $40,000", "All credit types and histories accepted", "No credit impact from checking rates"], link: "https://www.nextdaypersonalloan.com/" },
+  features: ["Next-day funding up to $40,000", "All credit types and histories accepted", "No credit impact from checking rates"], link: "https://trk.trkclix.net/click?campaign_id=52&pub_id=57" },
     { name: "Your Insurance Path", logo: "/quiz/images/yourInsurancePath.png", rating: 4.8, category: "auto-insurance", "description": "Get fast, free auto insurance quotes.",
-  features: ["Personalized quotes for your vehicle", "Accurate pricing based on your profile", "Secure data protection guaranteed"], link: "https://yourinsurancepath.com/auto-z/" },
+  features: ["Personalized quotes for your vehicle", "Accurate pricing based on your profile", "Secure data protection guaranteed"], link: "https://trk.trkclix.net/click?campaign_id=59&pub_id=57" },
     { name: "Choice Home Warranty", logo: "/quiz/images/choiceHomeWarranty.png", rating: 4.5, category: "home-warranty", 
       "description": "Protect major home systems and appliances.",
-      features: ["Covers major systems & home appliances", "Trusted by 2.4M homes nationwide", "Over 8M customer claims successfully handled"], link: "https://chwpricing.com/a/a168/t10.php?" },
+      features: ["Covers major systems & home appliances", "Trusted by 2.4M homes nationwide", "Over 8M customer claims successfully handled"], link: "https://trk.trkclix.net/click?campaign_id=15&pub_id=57" },
     { name: "Easy Solar Quotes", logo: "/quiz/images/easySolarQuotes.png", rating: 4.5, category: "solar", "description": "Compare trusted solar installers to save money.",
-  features: ["Get up to 4 personalized solar quotes", "Zero-down installation options available", "12-30 year comprehensive warranties included"], link: "https://easysolarquotes.net/" },
+  features: ["Get up to 4 personalized solar quotes", "Zero-down installation options available", "12-30 year comprehensive warranties included"], link: "https://trk.trkclix.net/click?campaign_id=19&pub_id=57" },
   ]
 
   const insuranceProviders = getScoredAndTaggedProviders()
@@ -381,11 +381,15 @@ const ResultsPage = ({ answers, onStartOver }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-10 md:mb-12"
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight flex items-center justify-center">
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            Great News!
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight text-center">
+            <div className="flex items-center justify-center">
+              <div className="bg-green-100 rounded-full p-2 mr-3">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span>Great News!</span>
+            </div>
           </h1>
           
           {/* SVG Logo */}
@@ -393,7 +397,7 @@ const ResultsPage = ({ answers, onStartOver }) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-4 sm:mb-6 flex justify-center"
+            className="mb-6 sm:mb-8 flex justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" id="Layer_1" version="1.1" viewBox="16.8 5.3 294.17 214.2" width="150" height="109" className="max-w-full h-auto">
               <defs>
@@ -460,9 +464,55 @@ const ResultsPage = ({ answers, onStartOver }) => {
             </svg>
           </motion.div>
           
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-2">
-            Based on your profile, we've found your best financial protection options. Connect with trusted providers and secure your financial future today.
-          </p>
+          <div className="text-base sm:text-lg md:text-xl text-gray-600 max-w-4xl mx-auto px-2 mb-6">
+            <div className="block whitespace-nowrap">Based on your responses, we've matched you with a trusted debt relief partner.</div>
+            <div className="block whitespace-nowrap">A dedicated specialist will reach out to you within the next 24–48 hours to discuss your options.</div>
+          </div>
+          
+          {/* Benefit Pills */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-6 sm:mb-8 max-w-4xl mx-auto"
+          >
+            {/* Expect a call or email soon */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-full px-4 py-3 border border-gray-200 flex items-center gap-3 shadow-sm"
+            >
+              <span className="text-2xl">📞</span>
+              <span className="text-gray-800 font-medium text-sm">Expect a call or email soon</span>
+            </motion.div>
+
+            {/* Have your questions ready */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-full px-4 py-3 border border-gray-200 flex items-center gap-3 shadow-sm"
+            >
+              <span className="text-2xl">📋</span>
+              <span className="text-gray-800 font-medium text-sm">Have your questions ready</span>
+            </motion.div>
+
+            {/* No pressure. No obligation. */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-full px-4 py-3 border border-gray-200 flex items-center gap-3 shadow-sm"
+            >
+              <span className="text-2xl">✅</span>
+              <span className="text-gray-800 font-medium text-sm">No pressure. No obligation.</span>
+            </motion.div>
+          </motion.div>
+          
         </motion.div>
 
         {/* Offers Container Box */}
@@ -677,16 +727,17 @@ const ResultsPage = ({ answers, onStartOver }) => {
                 <motion.div 
                   className="text-center order-1"
                   whileHover={{ 
-                    scale: 1.08,
-                    rotateY: 5,
+                    scale: 1.05,
                     transition: { duration: 0.3, ease: "easeOut" }
                   }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
                   <motion.div 
-                    className={`inline-block p-1.5 rounded-xl border-2 mb-2 sm:mb-3 transition-all duration-300 ${
+                    className={`inline-block p-2 rounded-xl border-2 mb-2 sm:mb-3 transition-all duration-300 overflow-hidden ${
                       // Black backgrounds for specific logos with white/light text
+                      provider.name === "Debt Relief - CPL - USA" ||
+                      provider.name === "DebtMD- US" ||
                       provider.name === "Insurify" || 
                       provider.name === "The Accident Office" || 
                       provider.name === "Mutual of Omaha" || 
@@ -699,8 +750,7 @@ const ResultsPage = ({ answers, onStartOver }) => {
                         : "bg-white border-gray-200 shadow-md"
                     }`}
                     whileHover={{
-                      scale: 1.05,
-                      rotateY: 10,
+                      scale: 1.02,
                       boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
                       transition: { duration: 0.3 }
                     }}
@@ -714,6 +764,8 @@ const ResultsPage = ({ answers, onStartOver }) => {
                       alt={provider.name}
                       className={`object-contain transition-all duration-300 ${
                         // Add brightness enhancement for black backgrounds
+                        provider.name === "Debt Relief - CPL - USA" ||
+                        provider.name === "DebtMD- US" ||
                         provider.name === "Insurify" || 
                         provider.name === "The Accident Office" || 
                         provider.name === "Mutual of Omaha" || 
@@ -729,26 +781,21 @@ const ResultsPage = ({ answers, onStartOver }) => {
                           ? "w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" 
                           : "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
                       }`}
-                      initial={{ opacity: 0, scale: 0.8, rotateY: -20 }}
-                      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       transition={{ 
                         delay: 0.3 + index * 0.1, 
                         duration: 0.6,
                         ease: [0.25, 0.46, 0.45, 0.94]
                       }}
                       whileHover={{ 
-                        scale: 1.15,
-                        rotateY: 5,
-                        filter: "brightness(1.1) contrast(1.1)",
+                        scale: 1.05,
                         transition: { duration: 0.3 }
                       }}
                       whileTap={{ scale: 0.95 }}
                       onError={(e) => {
                         e.target.style.display = 'none'
                         e.target.nextSibling.style.display = 'block'
-                      }}
-                      style={{
-                        transformStyle: 'preserve-3d'
                       }}
                     />
                   </motion.div>
