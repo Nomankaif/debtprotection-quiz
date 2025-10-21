@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 
 const LoadingSpinner = () => (
   <svg 
@@ -26,16 +27,14 @@ const LoadingSpinner = () => (
 const LoadingPage = ({ onComplete }) => {
   const [progress, setProgress] = useState(0)
   const [currentMessage, setCurrentMessage] = useState(0)
-
-  // Target URL for redirection
-  const REDIRECT_URL = 'https://trk.trkclix.net/click?campaign_id=17&pub_id=57'
+  const navigate = useNavigate()
 
   const messages = [
-    "Please wait, we're finding the best program available for you...",
-    "Analyzing your responses...",
-    "Comparing insurance providers...",
-    "Finding the best rates for your profile...",
-    "Almost ready with your personalized quote..."
+    "Please wait, we’re reviewing your details for the best debt relief options...",
+  "Analyzing your eligibility for top-rated programs...",
+  "Matching you with trusted debt specialists...",
+  "Finding the best plans to reduce your monthly payments...",
+  "Almost done — preparing your personalized debt relief results..."
   ]
 
   useEffect(() => {
@@ -46,18 +45,13 @@ const LoadingPage = ({ onComplete }) => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval)
-          
-          // ************************************************************
-          // ⭐ MODIFICATION HERE: Redirect to the external URL instead of calling onComplete()
-          // ************************************************************
           setTimeout(() => {
-            window.location.href = REDIRECT_URL
-            // Note: onComplete is no longer needed, but if you want to keep the option, you could do:
-            // if (onComplete) onComplete() 
-            // but for external redirect, `window.location.href` handles the navigation.
-          }, 500) // Wait 500ms after 100% before redirecting
-          // ************************************************************
-
+            if (onComplete) {
+              onComplete()
+            } else {
+              navigate('/results', { replace: true })
+            }
+          }, 500)
           return 100
         }
         return prev + 2
@@ -72,7 +66,7 @@ const LoadingPage = ({ onComplete }) => {
       clearInterval(progressInterval)
       clearInterval(messageInterval)
     }
-  }, []) // Removed onComplete from dependencies as it's no longer used for navigation
+  }, [onComplete])
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -157,31 +151,31 @@ const LoadingPage = ({ onComplete }) => {
           transition={{ duration: 0.8, delay: 1 }}
         >
           <div className="text-center">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="text-xs font-medium text-gray-600">100% Free</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <p className="text-xs font-medium text-gray-600">No Credit Check</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <p className="text-xs font-medium text-gray-600">Instant Results</p>
-          </div>
+  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  </div>
+  <p className="text-xs font-medium text-gray-600">Guaranteed Protection</p>
+</div>
+
+<div className="text-center">
+  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clipRule="evenodd" />
+    </svg>
+  </div>
+  <p className="text-xs font-medium text-gray-600">No Impact on Credit Score</p>
+</div>
+
+<div className="text-center">
+  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1.5 sm:mb-2">
+    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+    </svg>
+  </div>
+  <p className="text-xs font-medium text-gray-600">Quick & Easy Coverage</p>
+</div>
         </motion.div>
 
         <motion.div

@@ -7,6 +7,7 @@ import Home from "./pages/Home.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import TermsOfUse from "./pages/TermsOfUse.jsx";
 import Loading from "./pages/Loading.jsx";
+import ResultsPage from "./pages/ResultsPage.jsx";
 import StickyNotice from "./components/StickyNotice.jsx";
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/termsOfUse" element={<TermsOfUse />} />
         <Route path="/loading" element={<Loading />} />
+        <Route path="/results" element={<ResultsPage />} />
       </Routes>
       <Footer />
       <StickyNotice />

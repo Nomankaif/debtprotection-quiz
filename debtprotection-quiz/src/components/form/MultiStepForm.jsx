@@ -66,34 +66,6 @@ const steps = [
     info: "📌 Home/car owners may qualify for additional debt relief options.",
   },
   {
-    key: "employmentStatus",
-    title: "What's your employment situation?",
-    type: "radio",
-    options: [
-      { label: "Employed full-time", value: "full-time" },
-      { label: "Employed part-time", value: "part-time" },
-      { label: "Self-employed", value: "self-employed" },
-      { label: "Unemployed", value: "unemployed" },
-      { label: "Retired", value: "retired" },
-      { label: "Student", value: "student" },
-    ],
-    info: "📌 No judgment. This just helps us find the right program for you.",
-  },
-  {
-    key: "struggles",
-    title: "What are you struggling with most?",
-    subtitle: "(Check all that apply)",
-    type: "checkbox",
-    options: [
-      { label: "High interest rates", value: "high-interest" },
-      { label: "Making minimum payments", value: "min-payments" },
-      { label: "Multiple credit card balances", value: "multiple-cards" },
-      { label: "Medical or personal loan debt", value: "medical-debt" },
-      { label: "All of the above", value: "all" },
-    ],
-    info: "💬 I was paying $623/month... Now I pay $162 and I can finally breathe.",
-  },
-  {
     key: "debtTypes",
     title: "What kind of debt do you have?",
     subtitle: "(Select all that apply)",
@@ -475,15 +447,13 @@ export default function MultiStepForm() {
       return;
     }
 
-    // build payload that matches backend schema
+    setSubmitting(true);
+    setSubmitError("");
+    
+    // Store form data in localStorage for potential future use
     const payload = {
       debtAmount: data.debtAmount || "",
-      assets:
-        Array.isArray(data.assets) && data.assets.length > 0
-          ? data.assets
-          : ["none"],
-      employmentStatus: data.employmentStatus || "",
-      struggles: Array.isArray(data.struggles) ? data.struggles : [],
+      assets: Array.isArray(data.assets) && data.assets.length > 0 ? data.assets : ["none"],
       debtTypes: Array.isArray(data.debtTypes) ? data.debtTypes : [],
       zipcode: data.zipcode || "",
       countryCode: data.countryCode || "",
@@ -492,39 +462,13 @@ export default function MultiStepForm() {
       lastName: data.lastName || "",
       email: data.email || "",
       option: !!data.option,
-      submissionMetadata: {
-        dwellMs: dwell,
-        interactions,
-        page: typeof window !== "undefined" ? window.location.href : "",
-        referrer: typeof document !== "undefined" ? document.referrer : "",
-        userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
-      },
     };
-
-    setSubmitting(true);
-    setSubmitError("");
-    try {
-      const res = await fetch("/api/form/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || `Form submit failed (${res.status})`);
-      }
-
-      localStorage.setItem("lastSubmitTs", String(Date.now()));
-      navigate("/loading", { replace: true });
-    } catch (err) {
-      console.error("Submit error:", err);
-      setSubmitError(
-        "Something went wrong sending your request. Please try again."
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    
+    localStorage.setItem("formData", JSON.stringify(payload));
+    localStorage.setItem("lastSubmitTs", String(Date.now()));
+    
+    // Navigate to loading page
+    navigate("/loading", { replace: true });
   }
 
   function onRadioChange(k, v) {
@@ -537,26 +481,15 @@ export default function MultiStepForm() {
     bumpInteractions();
     const opts = steps.find((s) => s.key === k)?.options || [];
     const allValues = opts.map((o) => o.value);
-    const hasAllOption = allValues.includes("all");
-    // If the question has an 'all' sentinel option, treat 'all' as a special
-    // value; otherwise operate only on the individual option values.
-    const indivValues = hasAllOption
-      ? allValues.filter((x) => x !== "all")
-      : allValues;
+    const indivValues = allValues.filter((x) => x !== "all");
     let set = new Set(data[k] || []);
-
     if (v === "all") {
-      // ignore attempts to toggle 'all' for groups that don't support it
-      if (!hasAllOption) return;
       set = checked ? new Set(indivValues.concat("all")) : new Set();
     } else {
       checked ? set.add(v) : set.delete(v);
-      if (hasAllOption) {
-        if (indivValues.every((x) => set.has(x))) set.add("all");
-        else set.delete("all");
-      }
+      if (indivValues.every((x) => set.has(x))) set.add("all");
+      else set.delete("all");
     }
-
     update(k, Array.from(set));
   }
 

@@ -1,13 +1,18 @@
 // debtprotection-quiz/src/components/StickyNotice.jsx
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 export default function StickyNotice() {
   const [visible, setVisible] = React.useState(false);
+  const location = useLocation();
+  
+  const shouldHide = location.pathname === '/loading' || location.pathname === '/results';
 
   React.useEffect(() => {
+    if (shouldHide) return;
     const id = setTimeout(() => setVisible(true), 3000); // show after 3 seconds
     return () => clearTimeout(id);
-  }, []);
+  }, [shouldHide]);
 
   return (
     <div
@@ -20,7 +25,7 @@ export default function StickyNotice() {
                   px-4 py-3 sm:px-5 sm:py-3 text-[12px] sm:text-sm md:text-base text-slate-800
                   shadow-[0_8px_24px_rgba(0,0,0,0.24)]
                   ${
-                    visible
+                    visible && !shouldHide
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-2 pointer-events-none"
                   }
