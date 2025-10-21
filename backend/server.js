@@ -1,9 +1,8 @@
-
 // Your imports
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import formRoutes from "./src/routes/formRoutes.js";
+import { submitForm } from "./src/controllers/formController.js";
 import connectDB from "./src/config/db.js";
 
 dotenv.config();
@@ -22,7 +21,9 @@ app.use((req, res, next) => {
 // CORS Configuration
 const corsOptions = {
   origin: "https://www.debtprotection.org",
-  optionsSuccessStatus: 200,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 app.use(cors(corsOptions));
 
@@ -31,7 +32,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => res.send("Form API is running ??"));
-app.use("/quiz/api/form", formRoutes);
+app.post("/quiz/api/form/submit", submitForm);
 
 
 // Catch-all 404 Handler for debugging

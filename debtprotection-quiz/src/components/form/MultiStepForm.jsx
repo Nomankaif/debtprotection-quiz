@@ -462,7 +462,7 @@ export default function MultiStepForm() {
     };
     
     try {
-      const response = await fetch("/api/form/submit", {
+      const response = await fetch("/quiz/api/form/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

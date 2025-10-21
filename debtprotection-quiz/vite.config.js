@@ -7,7 +7,7 @@ export default defineConfig({
   base: "/quiz/",
   server: {
     proxy: {
-      "/api": {
+      "/quiz/api": {
         target: "http://localhost:5005",
         changeOrigin: true,
         secure: false,
