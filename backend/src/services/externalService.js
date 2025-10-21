@@ -13,13 +13,33 @@ export const pushToExternalApis = async (submission) => {
           ? api.headers(submission)
           : api.headers;
 
+      console.log(`[external] Sending to ${api.name}...`);
+      console.log(`[external] -> URL: ${api.url}`);
+      console.log(
+        `[external] -> Payload: ${JSON.stringify(payload, null, 2)}`
+      );
+      console.log(
+        `[external] -> Headers: ${JSON.stringify(headers, null, 2)}`
+      );
+
       const res = await axios.post(api.url, payload, { headers });
 
-      console.log(`✅ Sent to ${api.name}:`, res.status);
+      console.log(`[external] <- ${api.name} responded with ${res.status}`);
       results.push({ api: api.name, status: "success", code: res.status });
     } catch (err) {
-      console.error(`❌ Error sending to ${api.name}:`, err.message);
-      results.push({ api: api.name, status: "error", error: err.message });
+      console.error(`[external] Error sending to ${api.name}:`, err.message);
+      if (err.response) {
+        console.error(`[external] Response Status: ${err.response.status}`);
+        console.error(`[external] Response Data:`, err.response.data);
+        console.error(`[external] Response Headers:`, err.response.headers);
+      }
+      results.push({
+        api: api.name,
+        status: "error",
+        error: err.message,
+        statusCode: err.response?.status,
+        responseData: err.response?.data,
+      });
     }
   }
 

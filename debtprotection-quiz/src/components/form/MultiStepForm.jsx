@@ -537,15 +537,26 @@ export default function MultiStepForm() {
     bumpInteractions();
     const opts = steps.find((s) => s.key === k)?.options || [];
     const allValues = opts.map((o) => o.value);
-    const indivValues = allValues.filter((x) => x !== "all");
+    const hasAllOption = allValues.includes("all");
+    // If the question has an 'all' sentinel option, treat 'all' as a special
+    // value; otherwise operate only on the individual option values.
+    const indivValues = hasAllOption
+      ? allValues.filter((x) => x !== "all")
+      : allValues;
     let set = new Set(data[k] || []);
+
     if (v === "all") {
+      // ignore attempts to toggle 'all' for groups that don't support it
+      if (!hasAllOption) return;
       set = checked ? new Set(indivValues.concat("all")) : new Set();
     } else {
       checked ? set.add(v) : set.delete(v);
-      if (indivValues.every((x) => set.has(x))) set.add("all");
-      else set.delete("all");
+      if (hasAllOption) {
+        if (indivValues.every((x) => set.has(x))) set.add("all");
+        else set.delete("all");
+      }
     }
+
     update(k, Array.from(set));
   }
 
