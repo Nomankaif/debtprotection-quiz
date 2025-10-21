@@ -49,6 +49,34 @@ const steps = [
     info: "🛡️ Helping People Like You Since 2007",
   },
   {
+    key: "employmentStatus",
+    title: "What is your employment status?",
+    type: "radio",
+    options: [
+      { label: "Employed", value: "full-time" },
+      { label: "Self-Employed", value: "self-employed" },
+      { label: "Unemployed", value: "unemployed" },
+      { label: "Retired", value: "retired" },
+      { label: "Student", value: "student" },
+      { label: "part-time", value: "part-time" },
+    ],
+    info: "Your employment status helps us determine the best program for you.",
+  },
+  {
+    key: "struggles",
+    title: "Are you struggling with any of the following?",
+    subtitle: "(Select all that apply)",
+    type: "checkbox",
+    options: [
+      { label: "High-interest rates", value: "high-interest" },
+      { label: "Making only minimum payments", value: "min-payments" },
+      { label: "Juggling multiple card payments", value: "multiple-cards" },
+      { label: "Overwhelmed by medical debt", value: "medical-debt" },
+      { label: "None of the above", value: "none" },
+    ],
+    info: "This helps us understand your situation better.",
+  },
+  {
     key: "assets",
     title: "What assets do you currently own?",
     subtitle: "(Select all that apply)",
@@ -97,7 +125,8 @@ const steps = [
   },
 ];
 
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/xanjbawz";
+
+// const FORMSPREE_ENDPOINT = "https://formspree.io/f/xanjbawz";
 
 const COUNTRY_CODES = [
   {
@@ -450,10 +479,11 @@ export default function MultiStepForm() {
     setSubmitting(true);
     setSubmitError("");
     
-    // Store form data in localStorage for potential future use
     const payload = {
       debtAmount: data.debtAmount || "",
       assets: Array.isArray(data.assets) && data.assets.length > 0 ? data.assets : ["none"],
+      employmentStatus: data.employmentStatus || "",
+      struggles: data.struggles || [],
       debtTypes: Array.isArray(data.debtTypes) ? data.debtTypes : [],
       zipcode: data.zipcode || "",
       countryCode: data.countryCode || "",
@@ -461,14 +491,31 @@ export default function MultiStepForm() {
       firstName: data.firstName || "",
       lastName: data.lastName || "",
       email: data.email || "",
-      option: !!data.option,
+      option: data.option === true,
     };
     
-    localStorage.setItem("formData", JSON.stringify(payload));
-    localStorage.setItem("lastSubmitTs", String(Date.now()));
-    
-    // Navigate to loading page
-    navigate("/loading", { replace: true });
+    try {
+      const response = await fetch("/api/form/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Form submission failed");
+      }
+
+      localStorage.setItem("formData", JSON.stringify(payload));
+      localStorage.setItem("lastSubmitTs", String(Date.now()));
+      
+      navigate("/loading", { replace: true });
+    } catch (error) {
+      setSubmitError(error.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function onRadioChange(k, v) {
@@ -479,6 +526,14 @@ export default function MultiStepForm() {
 
   function onCheckboxToggle(k, v, checked) {
     bumpInteractions();
+    if (k === 'assets') {
+      onAssetsCheckboxToggle(k, v, checked);
+      return;
+    }
+    if (k === 'struggles') {
+      onStrugglesCheckboxToggle(k, v, checked);
+      return;
+    }
     const opts = steps.find((s) => s.key === k)?.options || [];
     const allValues = opts.map((o) => o.value);
     const indivValues = allValues.filter((x) => x !== "all");
@@ -489,6 +544,22 @@ export default function MultiStepForm() {
       checked ? set.add(v) : set.delete(v);
       if (indivValues.every((x) => set.has(x))) set.add("all");
       else set.delete("all");
+    }
+    update(k, Array.from(set));
+  }
+
+  function onStrugglesCheckboxToggle(k, v, checked) {
+    bumpInteractions();
+    let set = new Set(data[k] || []);
+    if (v === "none") {
+      set = checked ? new Set(["none"]) : new Set();
+    } else {
+      if (checked) {
+        set.delete("none");
+        set.add(v);
+      } else {
+        set.delete(v);
+      }
     }
     update(k, Array.from(set));
   }
