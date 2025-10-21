@@ -129,7 +129,7 @@ export const externalApis = [
       return payload;
     },
   },
-  {
+  /*{
     name: "BeeceptorMockAPI",
     url: "https://mp9ba419c2cf2f062247.free.beeceptor.com",
     headers: () => ({
@@ -156,5 +156,5 @@ export const externalApis = [
         submissionMetadata: submission.submissionMetadata,
       };
     },
-  },
+  },*/
 ];
