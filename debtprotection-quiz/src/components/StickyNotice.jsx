@@ -5,8 +5,18 @@ import { useLocation } from "react-router-dom";
 export default function StickyNotice() {
   const [visible, setVisible] = React.useState(false);
   const location = useLocation();
-  
-  const shouldHide = location.pathname === '/loading' || location.pathname === '/results';
+
+  const shouldHide =
+    location.pathname === "/loading" || location.pathname === "/results";
+
+  // ✅ Automatically calculate tomorrow's date
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const formattedDate = tomorrow.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   React.useEffect(() => {
     if (shouldHide) return;
@@ -31,7 +41,7 @@ export default function StickyNotice() {
                   }
                   transition-all duration-300 z-[60]`}
     >
-      ⚠️ <strong>Updated September 23, 2025</strong>: Free debt evaluations
+      ⚠️ <strong>Updated {formattedDate}</strong>: Free debt evaluations
       filling fast. Check eligibility before spots close.
     </div>
   );
