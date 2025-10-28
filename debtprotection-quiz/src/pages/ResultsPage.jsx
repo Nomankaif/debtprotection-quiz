@@ -277,11 +277,14 @@ const ResultsPage = ({ answers, onStartOver }) => {
       rotateX: 0,
       filter: "blur(0px)",
       transition: {
+        // Use tween for filter to avoid negative blur overshoot
         duration: 0.8,
         ease: [0.25, 0.46, 0.45, 0.94],
-        type: "spring",
-        stiffness: 100,
-        damping: 15
+        type: "tween",
+        // Apply spring only to transform properties
+        y: { type: "spring", stiffness: 100, damping: 15 },
+        scale: { type: "spring", stiffness: 100, damping: 15 },
+        rotateX: { type: "spring", stiffness: 100, damping: 15 }
       }
     }
   }
