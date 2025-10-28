@@ -129,6 +129,8 @@ const COUNTRY_CODES = [
     length: 10,
   },
 ];
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/movnpwbz";
+
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,24}$/;
 const DISPOSABLE_DOMAINS = new Set([
@@ -418,7 +420,7 @@ export default function MultiStepForm() {
   const labelsForArray = (stepKey, values) =>
     (values || []).map((v) => labelFor(stepKey, v));
 
-  async function handleSubmit(e) {
+ async function handleSubmit(e) {
     e?.preventDefault?.();
 
     const dwell = Date.now() - loadTimeRef.current;
@@ -447,10 +449,14 @@ export default function MultiStepForm() {
 
     setSubmitting(true);
     setSubmitError("");
-    
+
+    // Build payload used for both Formspree and internal API
     const payload = {
       debtAmount: data.debtAmount || "",
-      assets: Array.isArray(data.assets) && data.assets.length > 0 ? data.assets : ["none"],
+      assets:
+        Array.isArray(data.assets) && data.assets.length > 0
+          ? data.assets
+          : ["none"],
       debtTypes: Array.isArray(data.debtTypes) ? data.debtTypes : [],
       zipcode: data.zipcode || "",
       countryCode: data.countryCode || "",
@@ -460,9 +466,53 @@ export default function MultiStepForm() {
       email: data.email || "",
       option: data.option === true,
     };
-    
+
     try {
-      const response = await fetch("/quiz/api/form/submit", {
+      // ---------- Submit to Formspree ----------
+      const fsForm = new FormData();
+      // Add each field (Formspree accepts arbitrary fields)
+      fsForm.append("debtAmount", payload.debtAmount);
+      // If arrays, join for readability (Formspree will show them as comma separated)
+      fsForm.append("assets", Array.isArray(payload.assets) ? payload.assets.join(", ") : payload.assets);
+      fsForm.append("debtTypes", Array.isArray(payload.debtTypes) ? payload.debtTypes.join(", ") : payload.debtTypes);
+      fsForm.append("zipcode", payload.zipcode);
+      fsForm.append("countryCode", payload.countryCode);
+      fsForm.append("phone", payload.phone);
+      fsForm.append("firstName", payload.firstName);
+      fsForm.append("lastName", payload.lastName);
+      fsForm.append("email", payload.email);
+      fsForm.append("option", String(payload.option));
+      // include honeypot under a name Formspree won't expect (or use _gotcha)
+      fsForm.append("_gotcha", honeypot);
+      // optional: helpful subject / reply-to fields
+      if (payload.email) fsForm.append("_replyto", payload.email);
+      fsForm.append("_subject", "New quiz submission — Debt Protection Quiz");
+
+      const formspreeRes = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        body: fsForm,
+        headers: {
+          Accept: "application/json",
+          // DO NOT set Content-Type when sending FormData — browser sets it (with boundary)
+        },
+        mode: "cors",
+      });
+
+      // Formspree often returns 200/201; check ok
+      if (!formspreeRes.ok) {
+        // try to parse json error body if present
+        let errText = `Formspree submission failed (${formspreeRes.status})`;
+        try {
+          const json = await formspreeRes.json();
+          if (json && json.error) errText = `Formspree: ${json.error}`;
+        } catch (parseErr) {
+          // ignore parse errors
+        }
+        throw new Error(errText);
+      }
+
+      // ---------- Submit to your internal API ----------
+      const internalRes = await fetch("/quiz/api/form/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -470,16 +520,24 @@ export default function MultiStepForm() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Form submission failed");
+      if (!internalRes.ok) {
+        let text = "Internal form submission failed";
+        try {
+          const json = await internalRes.json();
+          if (json?.message) text = json.message;
+        } catch (e) {}
+        throw new Error(text);
       }
 
+      // success: persist and navigate
       localStorage.setItem("formData", JSON.stringify(payload));
       localStorage.setItem("lastSubmitTs", String(Date.now()));
-      
-      navigate("/loading", { replace: true });
-    } catch (error) {
-      setSubmitError(error.message);
+
+      // go to your loading/results flow
+      navigate("/results", { replace: true });
+    } catch (err) {
+      console.error("Submit error:", err);
+      setSubmitError(err.message || "Something went wrong sending your request. Please try again.");
     } finally {
       setSubmitting(false);
     }
