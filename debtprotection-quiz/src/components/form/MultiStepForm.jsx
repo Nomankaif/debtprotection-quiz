@@ -468,11 +468,10 @@ export default function MultiStepForm() {
     };
 
     try {
-      // ---------- Submit to Formspree ----------
+      // ---------- Submit to Formspree (non-blocking) ----------
+      // We still send to Formspree, but failure here should NOT block DB save.
       const fsForm = new FormData();
-      // Add each field (Formspree accepts arbitrary fields)
       fsForm.append("debtAmount", payload.debtAmount);
-      // If arrays, join for readability (Formspree will show them as comma separated)
       fsForm.append("assets", Array.isArray(payload.assets) ? payload.assets.join(", ") : payload.assets);
       fsForm.append("debtTypes", Array.isArray(payload.debtTypes) ? payload.debtTypes.join(", ") : payload.debtTypes);
       fsForm.append("zipcode", payload.zipcode);
@@ -482,36 +481,33 @@ export default function MultiStepForm() {
       fsForm.append("lastName", payload.lastName);
       fsForm.append("email", payload.email);
       fsForm.append("option", String(payload.option));
-      // include honeypot under a name Formspree won't expect (or use _gotcha)
       fsForm.append("_gotcha", honeypot);
-      // optional: helpful subject / reply-to fields
       if (payload.email) fsForm.append("_replyto", payload.email);
-      fsForm.append("_subject", "New quiz submission — Debt Protection Quiz");
+      fsForm.append("_subject", "New quiz submission - Debt Protection Quiz");
 
-      const formspreeRes = await fetch(FORMSPREE_ENDPOINT, {
-        method: "POST",
-        body: fsForm,
-        headers: {
-          Accept: "application/json",
-          // DO NOT set Content-Type when sending FormData — browser sets it (with boundary)
-        },
-        mode: "cors",
-      });
-
-      // Formspree often returns 200/201; check ok
-      if (!formspreeRes.ok) {
-        // try to parse json error body if present
-        let errText = `Formspree submission failed (${formspreeRes.status})`;
-        try {
-          const json = await formspreeRes.json();
-          if (json && json.error) errText = `Formspree: ${json.error}`;
-        } catch (parseErr) {
-          // ignore parse errors
+      try {
+        const formspreeRes = await fetch(FORMSPREE_ENDPOINT, {
+          method: "POST",
+          body: fsForm,
+          headers: {
+            Accept: "application/json",
+          },
+          mode: "cors",
+        });
+        if (!formspreeRes.ok) {
+          let errText = `Formspree submission failed (${formspreeRes.status})`;
+          try {
+            const json = await formspreeRes.json();
+            if (json && json.error) errText = `Formspree: ${json.error}`;
+          } catch {}
+          console.warn(errText);
+          // do not throw; continue to save in our DB
         }
-        throw new Error(errText);
+      } catch (fsErr) {
+        console.warn("Formspree request error (continuing to save to DB):", fsErr);
       }
 
-      // ---------- Submit to your internal API ----------
+      // ---------- Submit to your internal API (DB save) ----------
       const internalRes = await fetch("/quiz/api/form/submit", {
         method: "POST",
         headers: {
@@ -533,7 +529,6 @@ export default function MultiStepForm() {
       localStorage.setItem("formData", JSON.stringify(payload));
       localStorage.setItem("lastSubmitTs", String(Date.now()));
 
-      // go to your loading/results flow
       navigate("/results", { replace: true });
     } catch (err) {
       console.error("Submit error:", err);
