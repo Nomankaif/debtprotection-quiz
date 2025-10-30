@@ -2,6 +2,7 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { US_ZIP_CODES } from "../../data/Zipcodes";
 
 const componentStyles = `
   .error-shake {
@@ -131,30 +132,32 @@ const COUNTRY_CODES = [
 ];
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/movnpwbz";
 
-
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,24}$/;
 const DISPOSABLE_DOMAINS = new Set([
-  "mailinator.com",
-  "yopmail.com",
-  "guerrillamail.com",
-  "10minutemail.com",
-  "tempmail.com",
-  "tempmailo.com",
-  "discard.email",
-  "sharklasers.com",
-  "trashmail.com",
-  "fakeinbox.com",
-  "getnada.com",
-  "inboxbear.com",
-  "mintemail.com",
-  "moakt.com",
-  "maildrop.cc",
-  "throwawaymail.com",
-  "mytemp.email",
-  "spambog.com",
-  "mail7.io",
-  "fakemail.com",
+  "mailinator.com","yopmail.com","guerrillamail.com","10minutemail.com","tempmail.com","tempmailo.com","discard.email","sharklasers.com","trashmail.com","fakeinbox.com","getnada.com","inboxbear.com","mintemail.com","moakt.com","maildrop.cc","throwawaymail.com","mytemp.email","spambog.com","mail7.io","fakemail.com",
 ]);
+
+function applyMask(mask, digits) {
+  if (!mask) return digits;
+  let out = "";
+  let i = 0;
+  for (const ch of mask) {
+    if (ch === "X") {
+      if (i < digits.length) out += digits[i++];
+      else break;
+    } else {
+      if (digits.length > 0) out += ch;
+    }
+  }
+  return out;
+}
+
+function formatPhoneDisplay(countryCode = "+1", digits = "") {
+  const meta =
+    COUNTRY_CODES.find((c) => c.code === countryCode) ||
+    COUNTRY_CODES[0];
+  return applyMask(meta?.format, digits);
+}
 
 function isDisposable(email = "") {
   const domain = email.split("@")[1]?.toLowerCase() || "";
@@ -173,6 +176,13 @@ export default function MultiStepForm() {
   const [successPulse, setSuccessPulse] = React.useState(false);
   const [completedSteps, setCompletedSteps] = React.useState(new Set());
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  // ZIP autocomplete/validation state
+  const [zipSuggestions, setZipSuggestions] = React.useState([]);
+  const [showZipSuggestions, setShowZipSuggestions] = React.useState(false);
+  const [cityState, setCityState] = React.useState({ city: "", state: "" });
+  const [zipError, setZipError] = React.useState("");
+  const [zipValidated, setZipValidated] = React.useState(false);
+
   const loadTimeRef = React.useRef(Date.now());
   const navigate = useNavigate();
 
@@ -191,15 +201,11 @@ export default function MultiStepForm() {
     const handleGlobalKeyDown = (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-
-        // Don't trigger if user is typing in text input fields
         const isTextInput =
           e.target.tagName === "INPUT" &&
           (e.target.type === "text" ||
             e.target.type === "email" ||
             e.target.type === "tel");
-
-        // For text inputs in contact/personal steps, allow Enter to proceed
         if (isTextInput) {
           if (step < total - 1) {
             guardedNext();
@@ -208,8 +214,6 @@ export default function MultiStepForm() {
           }
           return;
         }
-
-        // For all other cases (radio, checkbox, slider, or pressing Enter anywhere)
         if (step < total - 1) {
           guardedNext();
         } else {
@@ -217,9 +221,7 @@ export default function MultiStepForm() {
         }
       }
     };
-
     document.addEventListener("keydown", handleGlobalKeyDown);
-
     return () => {
       document.removeEventListener("keydown", handleGlobalKeyDown);
     };
@@ -259,40 +261,71 @@ export default function MultiStepForm() {
         setDropdownOpen(false);
       }
     };
-
     if (dropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpen]);
 
+  // Instant filter from local list
+  function filterZipCodes(partial) {
+    if (!partial) {
+      setZipSuggestions([]);
+      setShowZipSuggestions(false);
+      return;
+    }
+    const filtered = US_ZIP_CODES
+      .filter(item => item.zip.startsWith(partial))
+      .slice(0, 10);
+    setZipSuggestions(filtered);
+    setShowZipSuggestions(filtered.length > 0);
+  }
+
+  // Validate/resolve a full 5-digit ZIP. Tries local first, then zippopotam.us
+  async function lookupZipCode(zip) {
+    if (zip.length !== 5) return false;
+
+    const found = US_ZIP_CODES.find(item => item.zip === zip);
+    if (found) {
+      setCityState({ city: found.city, state: found.state });
+      setZipError("");
+      setZipValidated(true);
+      setData(d => ({ ...d, city: found.city, state: found.state }));
+      return true;
+    }
+    try {
+      const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+      if (!res.ok) throw new Error("not ok");
+      const json = await res.json();
+      const place = json?.places?.[0];
+      if (!place) throw new Error("no place");
+      const city = place["place name"];
+      const state = place["state abbreviation"];
+      setCityState({ city, state });
+      setZipError("");
+      setZipValidated(true);
+      setData(d => ({ ...d, city, state }));
+      return true;
+    } catch {
+      setZipValidated(false);
+      setCityState({ city: "", state: "" });
+      return false;
+    }
+  }
+
   function validate(s) {
     if (!s) return false;
-
-    if (s.type === "radio") {
-      return Boolean(data[s.key]);
-    }
-
-    if (s.type === "checkbox") {
-      return Boolean(data[s.key]?.length);
-    }
-
-    if (s.type === "dropdown") {
-      return Boolean(data[s.key]);
-    }
+    if (s.type === "radio") return Boolean(data[s.key]);
+    if (s.type === "checkbox") return Boolean(data[s.key]?.length);
+    if (s.type === "dropdown") return Boolean(data[s.key]);
 
     if (s.type === "contact") {
-      const zipOk = /^[0-9]{5}$/.test(data.zipcode || "");
-      const selectedCountry = COUNTRY_CODES.find(
-        (c) => c.code === data.countryCode
-      );
-      const phoneOk = new RegExp(
-        `^[0-9]{${selectedCountry?.length || 10}}$`
-      ).test(data.phone || "");
-      return zipOk && phoneOk;
+      const zipOkFormat = /^[0-9]{5}$/.test(data.zipcode || "");
+      const selectedCountry = COUNTRY_CODES.find(c => c.code === (data.countryCode || "+1"));
+      const phoneOk = new RegExp(`^[0-9]{${selectedCountry?.length || 10}}$`).test(data.phone || "");
+      return zipOkFormat && zipValidated && phoneOk;
     }
 
     if (s.type === "personal") {
@@ -304,7 +337,6 @@ export default function MultiStepForm() {
       const optionOk = data.option === true;
       return firstNameOk && lastNameOk && emailOk && saneDomain && optionOk;
     }
-
     return false;
   }
   const hasError = !validate(current);
@@ -317,24 +349,17 @@ export default function MultiStepForm() {
 
   function getErrorMessage() {
     if (!current) return "";
-
     if (current.type === "radio") return "Please choose an option to continue.";
     if (current.type === "checkbox") return "Pick at least one option.";
-    if (current.type === "dropdown")
-      return "Please select a debt amount to continue.";
+    if (current.type === "dropdown") return "Please select a debt amount to continue.";
 
     if (current.type === "contact") {
-      const zipOk = /^[0-9]{5}$/.test(data.zipcode || "");
-      const selectedCountry = COUNTRY_CODES.find(
-        (c) => c.code === data.countryCode
-      );
-      const phoneOk = new RegExp(
-        `^[0-9]{${selectedCountry?.length || 10}}$`
-      ).test(data.phone || "");
-
-      if (!zipOk && !phoneOk)
-        return "Please enter both zip code and phone number.";
-      if (!zipOk) return "Enter a valid 5-digit zip.";
+      const zipOkFormat = /^[0-9]{5}$/.test(data.zipcode || "");
+      const selectedCountry = COUNTRY_CODES.find(c => c.code === (data.countryCode || "+1"));
+      const phoneOk = new RegExp(`^[0-9]{${selectedCountry?.length || 10}}$`).test(data.phone || "");
+      if (!zipOkFormat && !phoneOk) return "Please enter both zip code and phone number.";
+      if (!zipOkFormat) return "Enter a valid 5-digit zip.";
+      if (zipOkFormat && !zipValidated) return "ZIP not found. Double-check it.";
       if (!phoneOk) return "Enter a valid phone number.";
     }
 
@@ -342,12 +367,9 @@ export default function MultiStepForm() {
       if (!data.firstName?.trim()) return "Please enter your first name.";
       if (!data.lastName?.trim()) return "Please enter your last name.";
       if (!data.email?.trim()) return "Please enter your email address.";
-      if (data.email && isDisposable(data.email))
-        return "Please use a real email (no disposable providers).";
-      if (data.email && !EMAIL_REGEX.test(data.email))
-        return "Enter a valid email address.";
-      if (!data.option)
-        return "Please agree to receive marketing communications.";
+      if (data.email && isDisposable(data.email)) return "Please use a real email (no disposable providers).";
+      if (data.email && !EMAIL_REGEX.test(data.email)) return "Enter a valid email address.";
+      if (!data.option) return "Please agree to receive marketing communications.";
     }
 
     return "Please complete this field to continue.";
@@ -360,13 +382,11 @@ export default function MultiStepForm() {
       setTimeout(() => setErrorShake(false), 500);
       return;
     }
-
     setCompletedSteps((prev) => new Set([...prev, step]));
     setTouchedError(false);
     setDropdownOpen(false);
     setSuccessPulse(true);
     setTimeout(() => setSuccessPulse(false), 600);
-
     setTimeout(() => {
       setStep((s) => Math.min(s + 1, total - 1));
     }, 200);
@@ -385,10 +405,7 @@ export default function MultiStepForm() {
       setStep(targetIndex);
       return;
     }
-
-    if (targetIndex === step) {
-      return;
-    }
+    if (targetIndex === step) return;
 
     if (targetIndex === step + 1) {
       if (!validate(current)) {
@@ -397,14 +414,12 @@ export default function MultiStepForm() {
         setTimeout(() => setErrorShake(false), 500);
         return;
       }
-
       setCompletedSteps((prev) => new Set([...prev, step]));
       setTouchedError(false);
       setDropdownOpen(false);
       setStep(targetIndex);
       return;
     }
-
     setTouchedError(true);
     setErrorShake(true);
     setTimeout(() => setErrorShake(false), 500);
@@ -420,7 +435,7 @@ export default function MultiStepForm() {
   const labelsForArray = (stepKey, values) =>
     (values || []).map((v) => labelFor(stepKey, v));
 
- async function handleSubmit(e) {
+  async function handleSubmit(e) {
     e?.preventDefault?.();
 
     const dwell = Date.now() - loadTimeRef.current;
@@ -450,7 +465,6 @@ export default function MultiStepForm() {
     setSubmitting(true);
     setSubmitError("");
 
-    // Build payload used for both Formspree and internal API
     const payload = {
       debtAmount: data.debtAmount || "",
       assets:
@@ -468,8 +482,6 @@ export default function MultiStepForm() {
     };
 
     try {
-      // ---------- Submit to Formspree (non-blocking) ----------
-      // We still send to Formspree, but failure here should NOT block DB save.
       const fsForm = new FormData();
       fsForm.append("debtAmount", payload.debtAmount);
       fsForm.append("assets", Array.isArray(payload.assets) ? payload.assets.join(", ") : payload.assets);
@@ -489,9 +501,7 @@ export default function MultiStepForm() {
         const formspreeRes = await fetch(FORMSPREE_ENDPOINT, {
           method: "POST",
           body: fsForm,
-          headers: {
-            Accept: "application/json",
-          },
+          headers: { Accept: "application/json" },
           mode: "cors",
         });
         if (!formspreeRes.ok) {
@@ -501,18 +511,14 @@ export default function MultiStepForm() {
             if (json && json.error) errText = `Formspree: ${json.error}`;
           } catch {}
           console.warn(errText);
-          // do not throw; continue to save in our DB
         }
       } catch (fsErr) {
         console.warn("Formspree request error (continuing to save to DB):", fsErr);
       }
 
-      // ---------- Submit to your internal API (DB save) ----------
       const internalRes = await fetch("/quiz/api/form/submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -525,7 +531,6 @@ export default function MultiStepForm() {
         throw new Error(text);
       }
 
-      // success: persist and navigate
       localStorage.setItem("formData", JSON.stringify(payload));
       localStorage.setItem("lastSubmitTs", String(Date.now()));
 
@@ -584,25 +589,17 @@ export default function MultiStepForm() {
 
   const stepVariants = {
     initial: { opacity: 0, x: 30, scale: 0.95 },
-    animate: {
-      opacity: 1,
-      x: 0,
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: [0.4, 0, 0.2, 1],
-      },
-    },
-    exit: {
-      opacity: 0,
-      x: -30,
-      scale: 0.95,
-      transition: {
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
-      },
-    },
+    animate: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } },
+    exit: { opacity: 0, x: -30, scale: 0.95, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
   };
+
+  // === NEW: solar-style "furthestAllowed" ===
+  const furthestAllowed = React.useMemo(() => {
+    for (let i = 0; i < steps.length; i++) {
+      if (!validateStep(i)) return i;   // first invalid step index
+    }
+    return total - 1;                    // all valid
+  }, [data, total]);
 
   return (
     <div className="card p-3 sm:p-5 md:p-7" aria-live="polite">
@@ -611,8 +608,8 @@ export default function MultiStepForm() {
         <div className="relative mb-6">
           <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-gray-200" />
           <motion.div
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-blue-500"
-            style={{ width: `${pct}%` }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full"
+            style={{ width: `${pct}%`, backgroundColor: "#007bff" }}
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ type: "tween", duration: 0.3 }}
@@ -621,18 +618,43 @@ export default function MultiStepForm() {
             {Array.from({ length: total }).map((_, i) => {
               const isComplete = i < step;
               const isActive = i === step;
-              const classes = isComplete
-                ? "bg-emerald-500 border-emerald-500 text-white"
+
+              // Classes for shape and base styling (colors overridden inline)
+              const baseClasses =
+                "w-8 h-8 rounded-full grid place-items-center border-2 text-sm font-bold shadow focus:outline-none";
+
+              // Inline color styles to enforce #007bff
+              const style = isComplete
+                ? { backgroundColor: "#007bff", borderColor: "#007bff", color: "#fff" }
                 : isActive
-                ? "border-blue-500 text-blue-600 bg-white"
-                : "border-gray-300 text-gray-400 bg-white";
+                ? { borderColor: "#007bff", color: "#007bff", backgroundColor: "#fff" }
+                : { borderColor: "#d1d5db", color: "#9ca3af", backgroundColor: "#fff" };
+
+              const clickable = i <= furthestAllowed;
+
               return (
-                <div
+                <button
+                  type="button"
                   key={i}
-                  className={`w-8 h-8 rounded-full grid place-items-center border-2 text-sm font-bold shadow ${classes}`}
+                  onClick={() => {
+                    if (i <= furthestAllowed) {
+                      setTouchedError(false);
+                      setDropdownOpen(false);
+                      setStep(i);
+                    } else {
+                      setTouchedError(true);
+                      setErrorShake(true);
+                      setTimeout(() => setErrorShake(false), 500);
+                    }
+                  }}
+                  className={`${baseClasses} ${
+                    clickable ? "cursor-pointer transition-transform hover:scale-110" : "cursor-not-allowed opacity-60"
+                  }`}
+                  style={style}
+                  aria-label={`Go to step ${i + 1}`}
                 >
                   {isComplete ? "✔" : i + 1}
-                </div>
+                </button>
               );
             })}
           </div>
@@ -647,9 +669,7 @@ export default function MultiStepForm() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className={`min-h-[300px] ${errorShake ? "error-shake" : ""} ${
-            successPulse ? "success-pulse" : ""
-          }`}
+          className={`min-h-[300px] ${errorShake ? "error-shake" : ""} ${successPulse ? "success-pulse" : ""}`}
         >
           {/* Hidden anti-bot field */}
           <input
@@ -773,9 +793,7 @@ export default function MultiStepForm() {
               {current.type === "radio" && (
                 <div
                   className={`grid gap-2.5 sm:gap-3 mt-6 sm:mt-8 ${
-                    current.options.length > 4
-                      ? "grid-cols-1 md:grid-cols-2"
-                      : "grid-cols-1"
+                    current.options.length > 4 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
                   }`}
                 >
                   {current.options.map((op) => {
@@ -785,7 +803,6 @@ export default function MultiStepForm() {
                         key={op.value}
                         onClick={() => {
                           onRadioChange(current.key, op.value);
-                          // Auto-advance only after state is updated
                           setTimeout(() => guardedNext(), 100);
                         }}
                         className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 h-full ${
@@ -810,9 +827,7 @@ export default function MultiStepForm() {
                           <div className="flex items-center space-x-3">
                             <div
                               className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                                checked
-                                  ? "border-blue-500 bg-blue-500"
-                                  : "border-slate-300"
+                                checked ? "border-blue-500 bg-blue-500" : "border-slate-300"
                               }`}
                             >
                               {checked && (
@@ -824,9 +839,7 @@ export default function MultiStepForm() {
                                 />
                               )}
                             </div>
-                            <span className="font-medium text-slate-700">
-                              {op.label}
-                            </span>
+                            <span className="font-medium text-slate-700">{op.label}</span>
                           </div>
                           <span className="text-blue-500 font-medium">➜</span>
                         </div>
@@ -848,11 +861,7 @@ export default function MultiStepForm() {
                       <motion.label
                         key={op.value}
                         className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 w-full h-full ${
-                          checked
-                            ? "border-blue-500 bg-blue-50"
-                            : touchedError && hasError
-                            ? "border-red-300"
-                            : "border-slate-200"
+                          checked ? "border-blue-500 bg-blue-50" : touchedError && hasError ? "border-red-300" : "border-slate-200"
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -862,29 +871,16 @@ export default function MultiStepForm() {
                           value={op.value}
                           onChange={(e) =>
                             isAssetsQuestion
-                              ? onAssetsCheckboxToggle(
-                                  current.key,
-                                  op.value,
-                                  e.target.checked
-                                )
-                              : onCheckboxToggle(
-                                  current.key,
-                                  op.value,
-                                  e.target.checked
-                                )
+                              ? onAssetsCheckboxToggle(current.key, op.value, e.target.checked)
+                              : onCheckboxToggle(current.key, op.value, e.target.checked)
                           }
                           checked={checked}
                           className="sr-only"
                         />
-
                         <div className="flex items-center space-x-3 w-full">
-                          {/* Checkbox Square */}
-                          {/* Checkbox Square */}
                           <div
                             className={`w-6 h-6 flex-shrink-0 rounded border-2 flex items-center justify-center transition-all ${
-                              checked
-                                ? "border-blue-500 bg-blue-500"
-                                : "border-slate-300"
+                              checked ? "border-blue-500 bg-blue-500" : "border-slate-300"
                             }`}
                           >
                             {checked && (
@@ -904,10 +900,7 @@ export default function MultiStepForm() {
                               </motion.svg>
                             )}
                           </div>
-                          {/* Label */}
-                          <span className="font-medium text-slate-700">
-                            {op.label}
-                          </span>
+                          <span className="font-medium text-slate-700">{op.label}</span>
                         </div>
                       </motion.label>
                     );
@@ -918,30 +911,92 @@ export default function MultiStepForm() {
               {/* Contact */}
               {current.type === "contact" && (
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">
-                      Zip Code
-                    </label>
+                  {/* ZIP with instant autocomplete */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-600 mb-2">Zip Code</label>
                     <input
                       ref={inputRef}
                       type="text"
+                      inputMode="numeric"
+                      maxLength={5}
                       placeholder="Enter 5-digit zip code"
                       value={data.zipcode || ""}
                       onChange={(e) => {
                         bumpInteractions();
-                        const digits = e.target.value
-                          .replace(/\D+/g, "")
-                          .slice(0, 5);
+                        const digits = e.target.value.replace(/\D+/g, "").slice(0, 5);
                         update("zipcode", digits);
+                        setZipError("");
+                        setZipValidated(false);
+                        setCityState({ city: "", state: "" });
+                        filterZipCodes(digits);
+                        if (digits.length === 5) lookupZipCode(digits);
+                      }}
+                      onBlur={(e) => {
+                        const related = e.relatedTarget;
+                        if (!related || !related.closest?.(".zip-suggestions")) {
+                          setTimeout(() => setShowZipSuggestions(false), 200);
+                        }
+                        const zip = (data.zipcode || "").trim();
+                        if (zip.length === 5 && !zipValidated) {
+                          setZipError("ZIP not found. Double-check it.");
+                        }
+                      }}
+                      onFocus={() => {
+                        filterZipCodes(data.zipcode || "");
                       }}
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 ${
-                        touchedError && !/^[0-9]{5}$/.test(data.zipcode || "")
+                        (touchedError && (!/^[0-9]{5}$/.test(data.zipcode || "") || !zipValidated)) || zipError
                           ? "border-red-500 bg-red-50"
                           : "border-slate-200"
                       }`}
                       autoComplete="postal-code"
                     />
+
+                    {/* Suggestions dropdown */}
+                    {showZipSuggestions && zipSuggestions.length > 0 && (
+                      <motion.div
+                        className="zip-suggestions absolute z-10 w-full mt-1 bg-white border-2 border-blue-100 rounded-lg shadow-xl max-h-64 overflow-y-auto"
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {zipSuggestions.map((sugg, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              update("zipcode", sugg.zip);
+                              lookupZipCode(sugg.zip);
+                              setShowZipSuggestions(false);
+                            }}
+                            onTouchStart={(e) => {
+                              e.preventDefault();
+                              update("zipcode", sugg.zip);
+                              lookupZipCode(sugg.zip);
+                              setShowZipSuggestions(false);
+                            }}
+                            className="w-full px-4 py-2.5 text-left hover:bg-blue-50 border-b last:border-b-0"
+                          >
+                            <div className="font-semibold text-slate-800">{sugg.zip}</div>
+                            <div className="text-xs text-slate-500">
+                              {sugg.city}, {sugg.state}
+                            </div>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+
+                    {(zipError && (touchedError || data.zipcode?.length === 5)) && (
+                      <p className="text-red-600 text-xs mt-2">{zipError}</p>
+                    )}
+                    {zipValidated && cityState.city && (
+                      <p className="text-emerald-600 text-xs mt-2">
+                        ✓ {cityState.city}, {cityState.state}
+                      </p>
+                    )}
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-slate-600 mb-2">
                       Phone Number
@@ -965,26 +1020,33 @@ export default function MultiStepForm() {
                       <input
                         type="tel"
                         placeholder={
-                          COUNTRY_CODES.find(
-                            (c) => c.code === (data.countryCode || "+1")
-                          )?.format || "Enter phone number"
+                          COUNTRY_CODES.find((c) => c.code === (data.countryCode || "+1"))?.format ||
+                          "Enter phone number"
                         }
-                        value={data.phone || ""}
+                        value={formatPhoneDisplay(data.countryCode || "+1", data.phone || "")}
                         onChange={(e) => {
                           bumpInteractions();
-                          const selectedCountry = COUNTRY_CODES.find(
-                            (c) => c.code === (data.countryCode || "+1")
+                          const selectedCountry =
+                            COUNTRY_CODES.find((c) => c.code === (data.countryCode || "+1")) ||
+                            { length: 10 };
+                          const maxLength = selectedCountry.length || 10;
+                          const digits = e.target.value.replace(/\D+/g, "").slice(0, maxLength);
+                          update("phone", digits);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Backspace") return;
+                          const formatted = formatPhoneDisplay(
+                            data.countryCode || "+1",
+                            data.phone || ""
                           );
-                          const maxLength = selectedCountry?.length || 10;
-                          const numbers = e.target.value
-                            .replace(/\D+/g, "")
-                            .slice(0, maxLength);
-                          update("phone", numbers);
+                          const pos = e.currentTarget.selectionStart || 0;
+                          if (pos > 0 && /\D/.test(formatted[pos - 1]) && (data.phone || "").length > 0) {
+                            e.preventDefault();
+                            update("phone", (data.phone || "").slice(0, -1));
+                          }
                         }}
                         className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 ${
-                          touchedError && hasError
-                            ? "border-red-500 bg-red-50"
-                            : "border-slate-200"
+                          touchedError && hasError ? "border-red-500 bg-red-50" : "border-slate-200"
                         }`}
                         autoComplete="tel"
                       />
@@ -1125,7 +1187,7 @@ export default function MultiStepForm() {
                     if (step < total - 1) {
                       guardedNext();
                     } else {
-                      submit();
+                      handleSubmit();
                     }
                   }}
                   disabled={submitting}
@@ -1170,7 +1232,7 @@ export default function MultiStepForm() {
                     className={`btn btn-primary px-6 py-2 sm:py-2.5 sm:min-w-[220px] ${
                       submitting
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-green-600 text-white hover:bg-green-700"
+                        : "bg-green-600 text-white hover:bg-[#0056b3]"
                     }`}
                     whileHover={submitting ? {} : { scale: 1.05 }}
                     whileTap={submitting ? {} : { scale: 0.95 }}

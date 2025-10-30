@@ -6,6 +6,12 @@ export const pushToExternalApis = async (submission) => {
   const results = [];
 
   for (const api of externalApis) {
+    // Skip disabled APIs
+    if (api.enabled === false) {
+      console.log(`[external] Skipping disabled API ${api.name}`);
+      continue;
+    }
+
     try {
       const payload = api.mapPayload(submission);
       const headers =
@@ -13,14 +19,21 @@ export const pushToExternalApis = async (submission) => {
           ? api.headers(submission)
           : api.headers;
 
+      // Mock path: do not call network, just echo a simulated success
+      if (api.mock === true || !api.url) {
+        console.log(`[external] Mocking ${api.name} (no network call)`);
+        console.log(`[external] -> Payload: ${JSON.stringify(payload, null, 2)}`);
+        const mockId = `mock_${api.name}_${Date.now()}`;
+        const mockData = { id: mockId, receivedAt: new Date().toISOString() };
+        results.push({ api: api.name, status: "mock", code: 200, data: mockData });
+        continue;
+      }
+
+      // Real network call (only if enabled and URL present)
       console.log(`[external] Sending to ${api.name}...`);
       console.log(`[external] -> URL: ${api.url}`);
-      console.log(
-        `[external] -> Payload: ${JSON.stringify(payload, null, 2)}`
-      );
-      console.log(
-        `[external] -> Headers: ${JSON.stringify(headers, null, 2)}`
-      );
+      console.log(`[external] -> Payload: ${JSON.stringify(payload, null, 2)}`);
+      console.log(`[external] -> Headers: ${JSON.stringify(headers, null, 2)}`);
 
       const res = await axios.post(api.url, payload, { headers });
 

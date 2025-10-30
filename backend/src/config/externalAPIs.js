@@ -129,32 +129,62 @@ export const externalApis = [
       return payload;
     },
   },
-  /*{
-    name: "BeeceptorMockAPI",
-    url: "https://mp9ba419c2cf2f062247.free.beeceptor.com",
-    headers: () => ({
-      "Content-Type": "application/json",
-    }),
-    mapPayload: (submission) => {
-      const debtFloor = toSafeNumber(submission.debtAmount);
-      const debtLabel = mapDebtRange(submission.debtAmount);
+//   {
+//     name: "BeeceptorMockAPI",
+//     url: "https://mp9ba419c2cf2f062247.free.beeceptor.com",
+//     headers: () => ({
+//       "Content-Type": "application/json",
+//     }),
+//     mapPayload: (submission) => {
+//       const debtFloor = toSafeNumber(submission.debtAmount);
+//       const debtLabel = mapDebtRange(submission.debtAmount);
 
-      return {
-        firstName: submission.firstName,
-        lastName: submission.lastName,
-        email: submission.email,
-        phone: normalizePhone(submission.phone),
-        zipCode: submission.zipcode,
-        countryCode: submission.countryCode,
-        debtAmount: debtFloor ?? submission.debtAmount,
-        debtRange: debtLabel,
-        assets: submission.assets,
-        employmentStatus: submission.employmentStatus,
-        struggles: submission.struggles,
-        debtTypes: submission.debtTypes,
-        option: submission.option,
-        submissionMetadata: submission.submissionMetadata,
-      };
-    },
-  },*/
+//       // Create mock data (this is the mock version of what you would get from NDR API)
+//       const mockData = {
+//         firstName: submission.firstName,
+//         lastName: submission.lastName,
+//         email: submission.email,
+//         phone: normalizePhone(submission.phone),
+//         zipCode: submission.zipcode,
+//         countryCode: submission.countryCode,
+//         debtAmount: debtFloor ?? submission.debtAmount,
+//         debtRange: debtLabel,
+//         assets: submission.assets,
+//         employmentStatus: submission.employmentStatus,
+//         struggles: submission.struggles,
+//         debtTypes: submission.debtTypes,
+//         option: submission.option,
+//         submissionMetadata: submission.submissionMetadata,
+//         // Mock data to simulate NDR response
+//         mockNdrApiResponse: {
+//           status: "success",
+//           message: "Mock NDR API response",
+//           data: {
+//             // Include sample data that would normally come from the NDR API
+//             pid: "12345", // Mock PID
+//             subid1: "subid-001", // Mock SubID1
+//             subid2: "subid-002", // Mock SubID2
+//             providers: [
+//               {
+//                 name: "Debt Relief Provider",
+//                 score: 9,
+//                 tag: "Best Match",
+//                 reasons: ["Debt relief specialist", "High debt amount"],
+//                 features: ["Reduce monthly payments", "Consolidate unsecured debts"],
+//               },
+//               {
+//                 name: "Auto Insurance Provider",
+//                 score: 7,
+//                 tag: "Recommended",
+//                 reasons: ["Car owner", "Save on premiums"],
+//                 features: ["Affordable rates", "Wide coverage options"],
+//               },
+//             ],
+//           },
+//         },
+//       };
+
+//       return mockData;
+//     },
+// }
 ];

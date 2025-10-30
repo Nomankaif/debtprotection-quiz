@@ -19,6 +19,15 @@ const ResultsPage = ({ answers, onStartOver }) => {
 
   const formData = getFormData()
   
+  // --- NEW: get a nice-looking first name (first token, title-cased) ---
+  const formatName = (raw = '') => {
+    const token = String(raw).trim().split(/\s+/)[0] || ''      // take first word only
+    return token
+      .toLowerCase()
+      .replace(/^[a-z]/, c => c.toUpperCase())                  // Title-case first letter
+  }
+  const firstName = formatName(formData.firstName)
+
   // Score and tag providers based on form data
   const getScoredAndTaggedProviders = () => {
     if (!formData || Object.keys(formData).length === 0) {
@@ -290,8 +299,8 @@ const ResultsPage = ({ answers, onStartOver }) => {
   }
 
   const allProviders = [
-    { name: "Debt Relief - CPL - USA", logo: "/quiz/images/debtrelief1.svg", rating: 4.6, category: "debt-relief", features: ["Reduce monthly payments", "Consolidate unsecured debts", "Free consultation with experts"], link: "https://trk.trkclix.net/click?campaign_id=16&pub_id=57" },
-    { name: "DebtMD- US", logo: "/quiz/images/debtmd.svg", rating: 4.5, category: "debt-relief", features: ["Personalized debt analyzer", "Connect with verified debt specialists", "Get a custom debt relief plan"], link: "https://trk.trkclix.net/click?campaign_id=17&pub_id=57" },
+    // { name: "Debt Relief - CPL - USA", logo: "/quiz/images/debtrelief1.svg", rating: 4.6, category: "debt-relief", features: ["Reduce monthly payments", "Consolidate unsecured debts", "Free consultation with experts"], link: "https://trk.trkclix.net/click?campaign_id=16&pub_id=57" },
+    // { name: "DebtMD- US", logo: "/quiz/images/debtmd.svg", rating: 4.5, category: "debt-relief", features: ["Personalized debt analyzer", "Connect with verified debt specialists", "Get a custom debt relief plan"], link: "https://trk.trkclix.net/click?campaign_id=17&pub_id=57" },
     { name: "Insurify", logo: "/quiz/images/insurify.svg", rating: 4.5, category: "auto-insurance", 
       description: "Compare 100+ providers for your best rate.",
       features: ["Save up to $1,025 annually on premiums", "Transparent pricing with no hidden fees", "Quick online quotes from 100+ providers"], 
@@ -391,7 +400,10 @@ const ResultsPage = ({ answers, onStartOver }) => {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <span>Great News!</span>
+              {/* --- NEW: personalize heading --- */}
+              <span>
+                {`Great News${firstName ? `, ${firstName}` : ''}!`}
+              </span>
             </div>
           </h1>
           
