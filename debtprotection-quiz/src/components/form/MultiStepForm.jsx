@@ -182,6 +182,8 @@ export default function MultiStepForm() {
   const [cityState, setCityState] = React.useState({ city: "", state: "" });
   const [zipError, setZipError] = React.useState("");
   const [zipValidated, setZipValidated] = React.useState(false);
+  // Cache for ZIP API calls to reduce rate limiting
+  const zipApiCache = React.useRef(new Map());
 
   const loadTimeRef = React.useRef(Date.now());
   const navigate = useNavigate();
@@ -276,6 +278,12 @@ export default function MultiStepForm() {
       setShowZipSuggestions(false);
       return;
     }
+    // Fallback if US_ZIP_CODES is not loaded
+    if (!US_ZIP_CODES || !Array.isArray(US_ZIP_CODES) || US_ZIP_CODES.length === 0) {
+      setZipSuggestions([]);
+      setShowZipSuggestions(false);
+      return;
+    }
     const filtered = US_ZIP_CODES
       .filter(item => item.zip.startsWith(partial))
       .slice(0, 10);
@@ -287,14 +295,34 @@ export default function MultiStepForm() {
   async function lookupZipCode(zip) {
     if (zip.length !== 5) return false;
 
-    const found = US_ZIP_CODES.find(item => item.zip === zip);
-    if (found) {
-      setCityState({ city: found.city, state: found.state });
-      setZipError("");
-      setZipValidated(true);
-      setData(d => ({ ...d, city: found.city, state: found.state }));
-      return true;
+    // Check local data first if available
+    if (US_ZIP_CODES && Array.isArray(US_ZIP_CODES) && US_ZIP_CODES.length > 0) {
+      const found = US_ZIP_CODES.find(item => item.zip === zip);
+      if (found) {
+        setCityState({ city: found.city, state: found.state });
+        setZipError("");
+        setZipValidated(true);
+        setData(d => ({ ...d, city: found.city, state: found.state }));
+        return true;
+      }
     }
+    // Check cache first
+    if (zipApiCache.current.has(zip)) {
+      const cached = zipApiCache.current.get(zip);
+      if (cached) {
+        setCityState({ city: cached.city, state: cached.state });
+        setZipError("");
+        setZipValidated(true);
+        setData(d => ({ ...d, city: cached.city, state: cached.state }));
+        return true;
+      } else {
+        // Cached as invalid
+        setZipValidated(false);
+        setCityState({ city: "", state: "" });
+        return false;
+      }
+    }
+
     try {
       const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
       if (!res.ok) throw new Error("not ok");
@@ -303,12 +331,16 @@ export default function MultiStepForm() {
       if (!place) throw new Error("no place");
       const city = place["place name"];
       const state = place["state abbreviation"];
+      // Cache the result
+      zipApiCache.current.set(zip, { city, state });
       setCityState({ city, state });
       setZipError("");
       setZipValidated(true);
       setData(d => ({ ...d, city, state }));
       return true;
     } catch {
+      // Cache the failure
+      zipApiCache.current.set(zip, null);
       setZipValidated(false);
       setCityState({ city: "", state: "" });
       return false;
@@ -623,9 +655,9 @@ export default function MultiStepForm() {
               const baseClasses =
                 "w-8 h-8 rounded-full grid place-items-center border-2 text-sm font-bold shadow focus:outline-none";
 
-              // Inline color styles to enforce #007bff
+              // Inline color styles to enforce green for completed steps
               const style = isComplete
-                ? { backgroundColor: "#007bff", borderColor: "#007bff", color: "#fff" }
+                ? { backgroundColor: "#10b981", borderColor: "#10b981", color: "#fff" }
                 : isActive
                 ? { borderColor: "#007bff", color: "#007bff", backgroundColor: "#fff" }
                 : { borderColor: "#d1d5db", color: "#9ca3af", backgroundColor: "#fff" };
@@ -1034,16 +1066,7 @@ export default function MultiStepForm() {
                           update("phone", digits);
                         }}
                         onKeyDown={(e) => {
-                          if (e.key !== "Backspace") return;
-                          const formatted = formatPhoneDisplay(
-                            data.countryCode || "+1",
-                            data.phone || ""
-                          );
-                          const pos = e.currentTarget.selectionStart || 0;
-                          if (pos > 0 && /\D/.test(formatted[pos - 1]) && (data.phone || "").length > 0) {
-                            e.preventDefault();
-                            update("phone", (data.phone || "").slice(0, -1));
-                          }
+                          // Allow normal backspace behavior - onChange will handle formatting
                         }}
                         className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 ${
                           touchedError && hasError ? "border-red-500 bg-red-50" : "border-slate-200"
