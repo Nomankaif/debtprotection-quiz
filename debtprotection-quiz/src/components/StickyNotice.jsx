@@ -17,8 +17,12 @@ export default function StickyNotice() {
   };
  
   React.useEffect(() => {
-    const id = setTimeout(() => setVisible(true), 3000);
-    return () => clearTimeout(id);
+    const id1 = setTimeout(() => setVisible(true), 3000);
+    const id2 = setTimeout(() => setVisible(false), 10000);
+    return () => {
+      clearTimeout(id1);
+      clearTimeout(id2);
+    };
   }, []);
  
   if (closed) return null;

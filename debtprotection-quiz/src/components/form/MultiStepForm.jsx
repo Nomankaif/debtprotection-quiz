@@ -47,7 +47,7 @@ const steps = [
       { label: "$90,000 - $99,999", value: "90000-99999" },
       { label: "$100,000+", value: "100000+" }
     ],
-    info: "🛡️ Helping People Like You Since 2007",
+    info: "🛡️ 18 Years of Helping Americans Break Free from Debt",
   },
   {
     key: "assets",
@@ -58,10 +58,10 @@ const steps = [
       { label: "House", value: "house" },
       { label: "Car", value: "car" },
       { label: "Land/Property", value: "land-property" },
-      {
-        label: "Investments (401k, stocks, retirement accounts)",
-        value: "investments",
-      },
+      // {
+      //   label: "Investments (401k, stocks, retirement accounts)",
+      //   value: "investments",
+      // },
       { label: "None of the above", value: "none" },
     ],
     info: "📌 Home/car owners may qualify for additional debt relief options.",
@@ -77,24 +77,24 @@ const steps = [
       { label: "Student loans", value: "student-loans" },
       { label: "Medical bills", value: "medical-bills" },
       { label: "Auto loans", value: "auto-loans" },
-      { label: "Taxes", value: "taxes" },
+      // { label: "Taxes", value: "taxes" },
       { label: "Other", value: "other" },
     ],
     info: "💡 Most people have more than one type of debt. Don't worry, checking multiple boxes won't hurt your chances of qualifying.",
   },
   {
-    key: "contact",
-    title: "We're almost done!",
-    subtitle: "Just need your location and phone number",
-    type: "contact",
-    info: "📌 Programs vary by location. This helps us check eligibility.",
+    key: "personalInfo",
+    title: "Almost done!\nJust a few quick details to check your eligibility.",
+    subtitle: " ‎ ",
+    type: "personal",
+    info: "⚡ Get your free debt relief summary right to your inbox.",
   },
   {
-    key: "personalInfo",
-    title: "You're One Click Away!",
-    subtitle: "Where should we send your free eligibility summary?",
-    type: "personal",
-    info: "🔒 100% secure. 🚫 No spam. ✅ No obligations.",
+    key: "contact",
+    title: "You’re almost there, Kris!\nLet’s see what programs you might qualify for.",
+    subtitle: " ‎ ",
+    type: "contact",
+    info: "🔒 Your info is safe. We’ll only match you with trusted partners.",
   },
 ];
 
@@ -239,6 +239,26 @@ export default function MultiStepForm() {
     }
   }, [step]);
 
+  // Restore ZIP validation state from data
+  React.useEffect(() => {
+    if (data.city && data.state) {
+      setCityState({ city: data.city, state: data.state });
+      setZipValidated(true);
+    }
+  }, [data.city, data.state]);
+
+  // Re-validate ZIP code when returning to contact step
+  React.useEffect(() => {
+    if (current.type === "contact" && data.zipcode && data.zipcode.length === 5 && !zipValidated) {
+      lookupZipCode(data.zipcode);
+    }
+  }, [step, data.zipcode, zipValidated]);
+
+  // Close ZIP suggestions when changing steps
+  React.useEffect(() => {
+    setShowZipSuggestions(false);
+  }, [step]);
+
   const bumpInteractions = () => setInteractions((n) => n + 1);
   const update = (key, value) => {
     bumpInteractions();
@@ -273,7 +293,7 @@ export default function MultiStepForm() {
 
   // Instant filter from local list
   function filterZipCodes(partial) {
-    if (!partial) {
+    if (!partial || partial.length >= 5) {
       setZipSuggestions([]);
       setShowZipSuggestions(false);
       return;
@@ -302,6 +322,8 @@ export default function MultiStepForm() {
         setCityState({ city: found.city, state: found.state });
         setZipError("");
         setZipValidated(true);
+        setShowZipSuggestions(false);
+        setZipSuggestions([]);
         setData(d => ({ ...d, city: found.city, state: found.state }));
         return true;
       }
@@ -313,6 +335,8 @@ export default function MultiStepForm() {
         setCityState({ city: cached.city, state: cached.state });
         setZipError("");
         setZipValidated(true);
+        setShowZipSuggestions(false);
+        setZipSuggestions([]);
         setData(d => ({ ...d, city: cached.city, state: cached.state }));
         return true;
       } else {
@@ -336,6 +360,8 @@ export default function MultiStepForm() {
       setCityState({ city, state });
       setZipError("");
       setZipValidated(true);
+      setShowZipSuggestions(false);
+      setZipSuggestions([]);
       setData(d => ({ ...d, city, state }));
       return true;
     } catch {
@@ -366,8 +392,7 @@ export default function MultiStepForm() {
       const email = data.email || "";
       const emailOk = EMAIL_REGEX.test(email);
       const saneDomain = !isDisposable(email);
-      const optionOk = data.option === true;
-      return firstNameOk && lastNameOk && emailOk && saneDomain && optionOk;
+      return firstNameOk && lastNameOk && emailOk && saneDomain;
     }
     return false;
   }
@@ -401,7 +426,6 @@ export default function MultiStepForm() {
       if (!data.email?.trim()) return "Please enter your email address.";
       if (data.email && isDisposable(data.email)) return "Please use a real email (no disposable providers).";
       if (data.email && !EMAIL_REGEX.test(data.email)) return "Enter a valid email address.";
-      if (!data.option) return "Please agree to receive marketing communications.";
     }
 
     return "Please complete this field to continue.";
@@ -421,6 +445,7 @@ export default function MultiStepForm() {
     setTimeout(() => setSuccessPulse(false), 600);
     setTimeout(() => {
       setStep((s) => Math.min(s + 1, total - 1));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 200);
   }
 
@@ -428,6 +453,7 @@ export default function MultiStepForm() {
     setTouchedError(false);
     setDropdownOpen(false);
     setStep((s) => Math.max(s - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function jumpTo(targetIndex) {
@@ -450,6 +476,7 @@ export default function MultiStepForm() {
       setTouchedError(false);
       setDropdownOpen(false);
       setStep(targetIndex);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setTouchedError(true);
@@ -510,7 +537,6 @@ export default function MultiStepForm() {
       firstName: data.firstName || "",
       lastName: data.lastName || "",
       email: data.email || "",
-      option: data.option === true,
     };
 
     try {
@@ -524,7 +550,6 @@ export default function MultiStepForm() {
       fsForm.append("firstName", payload.firstName);
       fsForm.append("lastName", payload.lastName);
       fsForm.append("email", payload.email);
-      fsForm.append("option", String(payload.option));
       fsForm.append("_gotcha", honeypot);
       if (payload.email) fsForm.append("_replyto", payload.email);
       fsForm.append("_subject", "New quiz submission - Debt Protection Quiz");
@@ -655,9 +680,9 @@ export default function MultiStepForm() {
               const baseClasses =
                 "w-8 h-8 rounded-full grid place-items-center border-2 text-sm font-bold shadow focus:outline-none";
 
-              // Inline color styles to enforce green for completed steps
+              // Inline color styles to enforce blue for completed steps
               const style = isComplete
-                ? { backgroundColor: "#10b981", borderColor: "#10b981", color: "#fff" }
+                ? { backgroundColor: "#007bff", borderColor: "#007bff", color: "#fff" }
                 : isActive
                 ? { borderColor: "#007bff", color: "#007bff", backgroundColor: "#fff" }
                 : { borderColor: "#d1d5db", color: "#9ca3af", backgroundColor: "#fff" };
@@ -673,10 +698,12 @@ export default function MultiStepForm() {
                       setTouchedError(false);
                       setDropdownOpen(false);
                       setStep(i);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
                       setTouchedError(true);
                       setErrorShake(true);
                       setTimeout(() => setErrorShake(false), 500);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                   }}
                   className={`${baseClasses} ${
@@ -701,7 +728,7 @@ export default function MultiStepForm() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className={`min-h-[300px] ${errorShake ? "error-shake" : ""} ${successPulse ? "success-pulse" : ""}`}
+          className={`min-h-[300px] ${errorShake && step !== 0 ? "error-shake" : ""} ${successPulse ? "success-pulse" : ""}`}
         >
           {/* Hidden anti-bot field */}
           <input
@@ -716,7 +743,7 @@ export default function MultiStepForm() {
 
           <div className="space-y-4">
             <div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2 text-center">
+              <h3 className="text-xl font-bold text-slate-800 mb-2 text-center whitespace-pre-line">
                 {current.title}
               </h3>
               {current.subtitle && (
@@ -739,7 +766,7 @@ export default function MultiStepForm() {
 
               {/* Dropdown */}
               {current.type === "dropdown" && (
-                <div className="space-y-6">
+                <div className="space-y-6 mt-6 sm:mt-8">
                   <div className="relative w-full max-w-md mx-auto" ref={dropdownRef}>
                     <motion.button
                       type="button"
@@ -974,7 +1001,12 @@ export default function MultiStepForm() {
                         }
                       }}
                       onFocus={() => {
-                        filterZipCodes(data.zipcode || "");
+                        const zip = data.zipcode || "";
+                        if (!zipValidated && zip.length > 0 && zip.length < 5) {
+                          filterZipCodes(zip);
+                        } else {
+                          setShowZipSuggestions(false);
+                        }
                       }}
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 ${
                         (touchedError && (!/^[0-9]{5}$/.test(data.zipcode || "") || !zipValidated)) || zipError
@@ -1033,7 +1065,7 @@ export default function MultiStepForm() {
                     <label className="block text-sm font-medium text-slate-600 mb-2">
                       Phone Number
                     </label>
-                    <div className="flex gap-2">
+                    <div className="w-full flex gap-2">
                       <select
                         value={data.countryCode || "+1"}
                         onChange={(e) => {
@@ -1041,7 +1073,7 @@ export default function MultiStepForm() {
                           update("countryCode", e.target.value);
                           update("phone", "");
                         }}
-                        className="px-3 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 bg-white min-w-[120px]"
+                        className="px-3 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-slate-900 bg-white w-[100px] sm:w-[120px]"
                       >
                         {COUNTRY_CODES.map((country) => (
                           <option key={country.code} value={country.code}>
@@ -1160,7 +1192,7 @@ export default function MultiStepForm() {
                       autoComplete="email"
                     />
                   </div>
-                  <div className="flex items-start space-x-3">
+                  {/* <div className="flex items-start space-x-3">
                     <input
                       type="checkbox"
                       id="option"
@@ -1174,13 +1206,13 @@ export default function MultiStepForm() {
                     <label htmlFor="option" className="text-sm text-slate-600">
                       I agree to receive marketing communications.
                     </label>
-                  </div>
+                  </div> */}
                 </div>
               )}
 
               {current.info && (
                 <motion.div
-                  className="mt-3.5 sm:mt-4 rounded-xl border bg-[linear-gradient(180deg,var(--primary-color-light),#fff)] text-slate-700 p-2.5 sm:p-3 text-center"
+                  className={`mt-3.5 sm:mt-4 rounded-xl border bg-[linear-gradient(180deg,var(--primary-color-light),#fff)] text-slate-700 p-2.5 sm:p-3 text-center ${current.type === "dropdown" ? "max-w-md mx-auto" : ""}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.05 }}
