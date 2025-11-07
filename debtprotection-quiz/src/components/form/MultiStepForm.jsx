@@ -190,6 +190,19 @@ export default function MultiStepForm() {
 
   const total = steps.length;
   const current = steps[step];
+  const displayedTitle = React.useMemo(() => {
+    if (!current) return "";
+    if (current.key !== "contact") return current.title;
+    const normalize = (value = "") => {
+      const trimmed = String(value ?? "").trim();
+      return trimmed;
+    };
+    const first = normalize(data.firstName);
+    const last = normalize(data.lastName);
+    const fullName = [first, last].filter(Boolean).join(" ").trim();
+    const nameToUse = fullName || "Kris";
+    return `You’re almost there, ${nameToUse}!\nLet’s see what programs you might qualify for.`;
+  }, [current, data.firstName, data.lastName]);
 
   React.useEffect(() => {
     const styleSheet = document.createElement("style");
@@ -744,7 +757,7 @@ export default function MultiStepForm() {
           <div className="space-y-4">
             <div>
               <h3 className="text-xl font-bold text-slate-800 mb-2 text-center whitespace-pre-line">
-                {current.title}
+                {displayedTitle}
               </h3>
               {current.subtitle && (
                 <p className="text-slate-600 text-sm mb-4 text-center">

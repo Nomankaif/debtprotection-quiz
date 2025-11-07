@@ -104,11 +104,7 @@ const debtFormSubmissionSchema = new Schema(
     },
     option: {
       type: Boolean,
-      required: true,
-      validate: [
-        (val) => val === true,
-        "User must agree to marketing communications.",
-      ],
+      default: false,
     },
 
     // Metadata captured on submission

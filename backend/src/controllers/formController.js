@@ -20,29 +20,15 @@ export const submitForm = async (req, res) => {
       firstName = "",
       lastName = "",
       email,
-      option, // must be explicitly provided
+      option = false,
       submissionMetadata = {},
     } = req.body;
 
-    // Check required fields
-    if (
-      !debtAmount ||
-      !email ||
-      !firstName ||
-      !lastName ||
-      !zipcode ||
-      option !== true
-    ) {
+    // Check required fields (do not force marketing consent here)
+    if (!debtAmount || !email || !firstName || !lastName || !zipcode) {
       return res.status(400).json({
         message: "Missing or invalid required fields",
-        required: [
-          "debtAmount",
-          "firstName",
-          "lastName",
-          "email",
-          "zipcode",
-          "option=true",
-        ],
+        required: ["debtAmount", "firstName", "lastName", "email", "zipcode"],
         received: { debtAmount, firstName, lastName, email, zipcode, option },
       });
     }

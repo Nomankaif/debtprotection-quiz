@@ -6,7 +6,10 @@ import App from "./App.jsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter basename="/quiz">
+  <BrowserRouter
+    basename="/quiz"
+    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+  >
     <App />
   </BrowserRouter>
 );

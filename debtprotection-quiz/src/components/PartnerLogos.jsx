@@ -16,7 +16,7 @@ function Logo({ file, alt, priority = false, width, height }) {
         "
         // Priority hints
         loading={priority ? "eager" : "lazy"}
-        fetchpriority={priority ? "high" : "low"}
+        fetchPriority={priority ? "high" : "low"}
         // decoding: leave default for priority; async for lazy
         {...(!priority ? { decoding: "async" } : {})}
         // Remove sizes since there's no srcSet; it's ignored otherwise.
