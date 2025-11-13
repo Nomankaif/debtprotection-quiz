@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5005;
+const PORT = process.env.PORT || 5012;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`?? Server running at http://0.0.0.0:${PORT}`);
 });
