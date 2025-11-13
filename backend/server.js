@@ -20,10 +20,9 @@ app.use((req, res, next) => {
 
 // CORS Configuration
 const corsOptions = {
-  origin: "https://www.debtprotection.org",
+  origin: ["https://debtprotection.org", "https://www.debtprotection.org"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
