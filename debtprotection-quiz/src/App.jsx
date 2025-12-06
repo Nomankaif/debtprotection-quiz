@@ -12,7 +12,8 @@ import StickyNotice from "./components/StickyNotice.jsx";
 
 export default function App() {
   const location = useLocation();
-  const isResultsPage = location.pathname.startsWith("/results");
+  const pathWithoutBase = location.pathname.replace(/^\/quiz/, "");
+  const isResultsPage = pathWithoutBase === "/results";
 
   return (
     <div className="min-h-screen flex flex-col">
