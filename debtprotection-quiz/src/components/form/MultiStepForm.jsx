@@ -586,11 +586,11 @@ export default function MultiStepForm() {
         console.warn("Formspree request error (continuing to save to DB):", fsErr);
       }
 
-      const internalRes = await fetch("/quiz/api/form/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      // const internalRes = await fetch("/quiz/api/form/submit", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(payload),
+      // });
 
       if (!internalRes.ok) {
         let text = "Internal form submission failed";
